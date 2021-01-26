@@ -13,7 +13,7 @@ import Effects from './Effects'
 import { EffectComposer, SSAO } from 'react-postprocessing'
 
 import { Link, useHistory } from 'react-router-dom'
-
+import {Prompt, DualPrompt} from './components/Prompt'
 // import './styles.css'
 
 // https://codesandbox.io/embed/r3f-gamma-correction-kmb9i
@@ -257,6 +257,9 @@ function BioPool(){
                   onClick={() => setSelect(k)}
                   onMouseEnter={() => someHandler(k)} 
                >
+               <div onClick={() => {setPool(1)}}>
+               
+               </div>
            <Canvas
             shadowMap
             width={200}
@@ -264,7 +267,7 @@ function BioPool(){
             gl={{ alpha: false, antialias: false }}
             camera={{ fov: 75, position: [0, 0, 70], near: 10, far: 150 }}
             onCreated={(state) => state.gl.setClearColor('white')}
-            style={{margin: '10px'}}
+            style={{margin: '10px', width: "90%"}}
             
             >
             <ambientLight intensity={1.5} />
@@ -285,11 +288,16 @@ function BioPool(){
       })
 
      return(
-       <ul class="grid">
-          {tiles}
-        </ul >
+       <div>
+         
+           <ul class="grid">
+            {tiles}
+          </ul >
+       </div>
       )
 }
+         // <div className="grid-left">left</div>
+         // <div className="grid-right">right</div>
 
 function Profile(props){
 
@@ -358,23 +366,23 @@ function Header(props: any){
     )
 }
 
-function Prompt(props){
+// function Prompt(props){
   
-  const [isGo, setGo] = useState(true);
-  console.log(props.prompt)
-  return(    
-   <div className="go-wrapper">
-      <div className="about-wrapper">
-         {props.message}
-      </div>
-      <button className="but"
-        style={{cursor: 'pointer'}}
-        onMouseEnter={() => setGo(false)}
-        onMouseLeave={() => setGo(true)}
-        onClick={() => props.setState((props.back == true ? props.state - 1 : props.state + 1))}
-      > {isGo ? (props.prompt) : 'x'}</button>
-    </div>)
-}
+//   const [isGo, setGo] = useState(true);
+//   console.log(props.prompt)
+//   return(    
+//    <div className="go-wrapper">
+//       <div className="about-wrapper">
+//          {props.message}
+//       </div>
+//       <button className="but"
+//         style={{cursor: 'pointer'}}
+//         onMouseEnter={() => setGo(false)}
+//         onMouseLeave={() => setGo(true)}
+//         onClick={() => props.setState((props.back == true ? props.state - 1 : props.state + 1))}
+//       > {isGo ? (props.prompt) : 'x'}</button>
+//     </div>)
+// }
 
 function Main(){
 
@@ -388,7 +396,7 @@ function Main(){
   switch(state){
     case 1:
       view.push(<Matter setLand={setLand} setState={setState}/>)
-      view.push(<Prompt state={state} setState={setState} message={"contribute to a future homestead, with others"} prompt={"go"}/>)
+      view.push(<DualPrompt state={state} setState={setState} message={"contribute to a future homestead, with others"} prompt1={"go"} prompt2={"build"}/>)
       view.push(<Footer />)
       break;
     case 2:

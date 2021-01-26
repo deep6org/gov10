@@ -8,8 +8,9 @@ import { abi as IAddressProvider } from './abis/LendingPoolAddressProvider.json'
 import { abi as IDataProvider } from './abis/ProtocolDataProvider.json'
 import { abi as ILendingPool } from './abis/LendingPool.json'
 import { abi as IPriceOracle } from './abis/PriceOracle.json'
-// import AaveAction from "./AaveAction"
 
+import Swap from "../Swap/index"
+import { ethers } from "ethers";
 
 import { APIClient, Openlaw } from 'openlaw';
 import OpenLawForm from 'openlaw-elements';
@@ -38,43 +39,86 @@ const { compiledTemplate } = Openlaw.compileTemplate('**Name**: [[First Name]] [
 // or MobX) throughout the lifetime of the app
 const parameters = {};
 
-  const { executionResult, errorMessage } = Openlaw.execute(compiledTemplate, {}, parameters, {});
-  const variables = Openlaw.getExecutedVariables(executionResult, {});
+const { executionResult, errorMessage } = Openlaw.execute(compiledTemplate, {}, parameters, {});
+const variables = Openlaw.getExecutedVariables(executionResult, {});
 
 // helpful for logging in development, or throwing exceptions at runtime
 if (errorMessage) {
-  console.error('Openlaw Execution Error:', errorMessage);
+console.error('Openlaw Execution Error:', errorMessage);
 }
 
 const onChange = (key, value) => {
-  console.log('KEY:', key, 'VALUE:', value);
-  parameters[key] = value
+console.log('KEY:', key, 'VALUE:', value);
+parameters[key] = value
 
-  console.log(variables)
-  console.log(executionResult)
+console.log(variables)
+console.log(executionResult)
 }
 
 const onSign = () => {
-  console.log('signing')
+console.log('signing')
 
 }
 
+// <OpenLawForm
+//   // https://docs.openlaw.io/openlaw-elements/#required-parameters
+//   apiClient={apiClient}
+//   executionResult={executionResult}
+//   parameters={parameters}
+//   onChangeFunction={onChange}
+//   openLaw={Openlaw}
+//   variables={variables}
+// />
+
+function Balance (props){
+  return(<div className="">{props.ticker} :: {props.amount}</div>)
+
+}
+
+function BalanceBar(props){
+  const balances = props.balances.map((k) => {
+    return <Balance ticker={k.ticker} amount={k.amount} />
+  })
+  return(<div className="">{balances}</div>)
+
+}
+
+function Panel(){
+  return(<div></div>)
+}
+
+function Action(){
+  return(<div></div>)
+}
+
+// function Swap(){
+  
+// }
+
 function Lend({ selectedProvider, ethPrice }){
+
+
+  let provider = ethers.getDefaultProvider('kovan');
+
   return (
     <div>
-      <OpenLawForm
-        // https://docs.openlaw.io/openlaw-elements/#required-parameters
-        apiClient={apiClient}
-        executionResult={executionResult}
-        parameters={parameters}
-        onChangeFunction={onChange}
-        openLaw={Openlaw}
-        variables={variables}
-      />
-      <button>
-      </button >
-    </div>
+      <ul className="grid">
+        <li className="delegate-item">
+          lend funds
+        </li>
+      </ul>
+      <div>
+        <BalanceBar balances={[{ticker: 'eth', amount: 1.3},{ticker: 'dai', amount: 20},{ticker: 'usdc', amount: 120},]} />
+        <Panel />
+      </div>
+      <Swap selectedProvider={provider}/>
+      <>
+         collateral: {}
+         debt: {}
+         allowance: {}
+      </>
 
+    </div>
   )
 }
 

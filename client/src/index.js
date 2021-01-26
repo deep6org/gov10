@@ -2,16 +2,16 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
-import { Lend, Land } from './components';
+import { Lend, Land, Builder } from './components';
 import reportWebVitals from './reportWebVitals';
 import { Route, Link, BrowserRouter as Router, Switch } from 'react-router-dom'
-
 
 const routing = (
   <Router>
     <div>
     <Switch>
       <Route exact path="/" component={App} />
+      <Route exact path="/builder" component={Builder} />
       <Route path="/lend" component={Lend} />
       <Route path="/land" component={Land} />
     </Switch>
