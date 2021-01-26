@@ -9,7 +9,7 @@ main {
     /* padding: 30px; */
     position: relative;
     width: 100%;
-    height: 60vh;
+    height: 50vh;
 }
 
 main.dark {
@@ -26,5 +26,11 @@ a {
 
 .builder-wrapper {
   width: 100%;
-  height: 60vh;
+  height: 50vh;
+}
+
+.builder-pool {
+  text-align: center;
+  margin-top: 20px;
+  width: 100%;
 }

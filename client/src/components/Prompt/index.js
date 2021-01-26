@@ -18,12 +18,13 @@ function Prompt(props){
         style={{cursor: 'pointer'}}
         onMouseEnter={() => setGo(false)}
         onMouseLeave={() => setGo(true)}
-        // onClick={() => props.setState((props.back == true ? props.state - 1 : props.state + 1))}
+        onClick={() => props.setState((props.back == true ? props.state - 1 : props.state + 1))}
       > {isGo ? (props.prompt) : 'x'}</button>
     </div>)
 }
 
 function DualPrompt(props){
+
   const history = useHistory();
   const [isGo, setGo] = useState(true);
   const [isBuild, setBuild] = useState(true);
@@ -45,7 +46,7 @@ function DualPrompt(props){
         style={{cursor: 'pointer'}}
         onMouseEnter={() => setBuild(false)}
         onMouseLeave={() => setBuild(true)}
-        onClick={() => history.push('/builder')}
+        onClick={() => history.push(props.nextPath)}
         // onClick={() => props.setState((props.back == true ? props.state - 1 : props.state + 1))}
       > {isBuild ? (props.prompt2) : 'x'}</button>
     </div>)

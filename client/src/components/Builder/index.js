@@ -9,10 +9,13 @@ import { ResizeObserver } from "@juggle/resize-observer"
 import { proxy, useProxy } from "valtio"
 import { EffectComposer, SSAO, SMAA } from "@react-three/postprocessing"
 
-import {Prompt} from '../Prompt'
+import {DualPrompt} from '../Prompt'
+
+import Header from '../Header'
 
 const state = proxy({ dark: false, active: 0, rotation: 0, disabled: false })
 const geometries = [
+  // TODO: Add colors
   new THREE.BoxBufferGeometry( 1, 1, 1 ),
   new THREE.BoxBufferGeometry( 1, 1, 1 ),
   new THREE.BoxBufferGeometry( 1, 1, 1 ),
@@ -142,10 +145,30 @@ function Carroussel() {
   )
 }
 
+function BioInspect(props){
+  console.log(props.snap)
+  const snap = useProxy(state)
+  console.log(props.snap !== undefined)
+  const matter = {
+    0: "mer",
+    1: "ven",
+    2: "ear",
+    3: "mar",
+    4: "jup",
+    5: "sat",
+    6: "ura",
+    7: "nep",
+    8: "all",
+  }
+
+  return(<div className="builder-pool">{snap !== undefined ? matter[snap.active] : ''}</div>)
+}
+
 export default function Builder() {
   const snap = useProxy(state)
   return (
     <div className="builder">
+      <Header title={"build"} />
       <div className="builder-wrapper">
         <main className={snap.dark ? "dark" : "bright"}>
           <Canvas resize={{ polyfill: ResizeObserver }} camera={{ position: [0, 0, 15], near: 4, far: 30 }} pixelRatio={[1, 1.5]}>
@@ -194,7 +217,8 @@ export default function Builder() {
           <A11yAnnouncer />
         </main>
       </div>
-      <Prompt message={"what pool would you like to borrow from?"} prompt={"borrow"}/>
+      <BioInspect state={snap}/>
+      <DualPrompt message={"what pool would you like to build for?"} prompt1={"inspect"} prompt2={"borrow"} nextPath={'/borrow'}/>
     </div>
   )
 }

@@ -396,12 +396,12 @@ function Main(){
   switch(state){
     case 1:
       view.push(<Matter setLand={setLand} setState={setState}/>)
-      view.push(<DualPrompt state={state} setState={setState} message={"contribute to a future homestead, with others"} prompt1={"go"} prompt2={"build"}/>)
+      view.push(<DualPrompt state={state} setState={setState} message={"contribute to a future homestead, with others"} prompt1={"go"} prompt2={"build"} nextPath={'/build'}/>)
       view.push(<Footer />)
       break;
     case 2:
       view.push(<BioPool setState={setState} />)
-      view.push(<Prompt state={state} setState={setState} message={"choose your pool, that matters"} prompt={"next > "}/>)
+      view.push(<Prompt state={state} setState={setState} message={"choose your pool, that matters"} prompt={"next > "} nextPath={'/profile'}/>)
       break;
     case 3:
       view.push(<Profile setState={setState} />)
