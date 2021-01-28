@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
-import { Lend, Land, Builder, Borrow } from './components';
+import { Lend, Land, Builder, Borrow, Register, Participate } from './components';
 import reportWebVitals from './reportWebVitals';
 import { Route, Link, BrowserRouter as Router, Switch } from 'react-router-dom'
 
@@ -12,11 +12,13 @@ const routing = (
     <Switch>
       <Route exact path="/" component={App} />
 
+      <Route path="/register" component={Register} />
       <Route path="/borrow" component={Borrow} />
       <Route path="/build" component={Builder} />
 
       <Route path="/lend" component={Lend} />
       <Route path="/land" component={Land} />
+      <Route path="/participate" component={Participate} />
     </Switch>
     </div>
   </Router>

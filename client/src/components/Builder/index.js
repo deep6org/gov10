@@ -218,7 +218,7 @@ export default function Builder() {
         </main>
       </div>
       <BioInspect state={snap}/>
-      <DualPrompt message={"what pool would you like to build for?"} prompt1={"inspect"} prompt2={"borrow"} nextPath={'/borrow'}/>
+      <DualPrompt message={"what pool would you like to build for?"} prompt1={"inspect"} prompt2={"register"} nextPath={'/register'}/>
     </div>
   )
 }

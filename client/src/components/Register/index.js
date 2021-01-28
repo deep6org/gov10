@@ -6,7 +6,7 @@ import Header from '../Header'
 import {MatterBuilder} from '../Matter'
 import {Prompt} from '../Prompt'
 
-class Borrow extends React.Component {
+class Register extends React.Component {
 
 
 	componentDidMount(){
@@ -51,4 +51,4 @@ class Borrow extends React.Component {
 	}
 }
 
-export default Borrow;
+export default Register;

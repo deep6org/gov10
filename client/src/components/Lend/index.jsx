@@ -9,13 +9,15 @@ import { abi as IDataProvider } from './abis/ProtocolDataProvider.json'
 import { abi as ILendingPool } from './abis/LendingPool.json'
 import { abi as IPriceOracle } from './abis/PriceOracle.json'
 
-import Swap from "../Swap/index"
+// import Swap from "../Swap/index"
 import { ethers } from "ethers";
 
 import { APIClient, Openlaw } from 'openlaw';
 import OpenLawForm from 'openlaw-elements';
 // our optional base styles - feel free to use them!
 import 'openlaw-elements/dist/openlaw-elements.min.css';
+
+import Account from '../Account/'
 
 export const POOL_ADDRESSES_PROVIDER_ADDRESS = '0xB53C1a33016B2DC2fF3653530bfF1848a515c8c5'
 const PROTOCOL_DATA_PROVIDER = '0x057835Ad21a177dbdd3090bB1CAE03EaCF78Fc6d'
@@ -71,7 +73,7 @@ console.log('signing')
 // />
 
 function Balance (props){
-  return(<div className="">{props.ticker} :: {props.amount}</div>)
+  return(<div className="balance">{props.ticker} :: {props.amount}</div>)
 
 }
 
@@ -98,7 +100,7 @@ function Action(){
 function Lend({ selectedProvider, ethPrice }){
 
 
-  let provider = ethers.getDefaultProvider('kovan');
+  // let provider = ethers.getDefaultProvider('kovan');
 
   return (
     <div>
@@ -111,7 +113,9 @@ function Lend({ selectedProvider, ethPrice }){
         <BalanceBar balances={[{ticker: 'eth', amount: 1.3},{ticker: 'dai', amount: 20},{ticker: 'usdc', amount: 120},]} />
         <Panel />
       </div>
-      <Swap selectedProvider={provider}/>
+
+      {/* <Swap selectedProvider={provider}/> */}
+      <Account />
       <>
          collateral: {}
          debt: {}

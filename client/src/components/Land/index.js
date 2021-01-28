@@ -5,7 +5,7 @@ import React, { useState, useEffect } from "react";
 import './index.css'
 
 import Header from '../Header'
-import Matter from '../Matter'
+import {Matter} from '../Matter'
 import {Prompt} from '../Prompt'
 
 class Land extends React.Component {
