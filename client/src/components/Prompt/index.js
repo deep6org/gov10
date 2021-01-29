@@ -23,6 +23,32 @@ function Prompt(props){
     </div>)
 }
 
+function Accept(props){
+  
+  const [isGo, setGo] = useState(true);
+  const [isBuild, setBuild] = useState(true);
+  console.log(props.prompt)
+
+  const submitPayload = async () => {
+    console.log('props')
+    console.log(props)
+  }
+
+  return(    
+   <div className="go-wrapper">
+      <div className="about-wrapper">
+         {props.message}
+      </div>
+
+      <button className="but"
+        style={{cursor: 'pointer'}}
+        onMouseEnter={() => setGo(false)}
+        onMouseLeave={() => setGo(true)}
+        onClick={() => submitPayload()}
+      > {isGo ? (props.prompt) : 'x'}</button>
+    </div>)
+}
+
 function DualPrompt(props){
 
   const history = useHistory();
@@ -52,4 +78,4 @@ function DualPrompt(props){
     </div>)
 }
 
-export {Prompt, DualPrompt};
+export {Prompt, DualPrompt, Accept};

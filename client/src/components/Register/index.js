@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 // import './mapbox.js'
 import Header from '../Header'
 import {MatterBuilder} from '../Matter'
-import {Prompt} from '../Prompt'
+import {Prompt, Accept} from '../Prompt'
 import {Land} from '../Land'
 import {BorrowerAccount} from '../Account'
 import { Canvas, useFrame } from 'react-three-fiber'
@@ -67,6 +67,10 @@ class Register extends React.Component {
 
 	}
 
+  setPayload = (payload) => {
+    console.log('calling')
+    console.log(payload)
+  }
 
 	render(){
 		return(
@@ -86,7 +90,7 @@ class Register extends React.Component {
 				{/* wallet */}
 				<Container style={{height: '20vh'}}>
 					<Row>
-				    <Col><BorrowerAccount /></Col>
+				    <Col><BorrowerAccount setPayload={this.setPayload}/></Col>
 				    <Col><MyDropzone/></Col>
 				    <Col>
 
@@ -97,7 +101,7 @@ class Register extends React.Component {
 				  </Row>
 				</Container>
 				{/**/}
-      			<Prompt message={"ready to borrow funds?"} prompt={"accept"}/>
+      	<Accept message={"ready to borrow funds?"} prompt={"accept"} onClick={this.setPayload} />
 			</React.Fragment>
 			)
 	}

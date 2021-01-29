@@ -39,7 +39,7 @@ class Participate extends React.Component {
 	render(){
 		return(
 			<React.Fragment>
-				<Header title={"rituals"} />
+				<Header title={"ritual"} />
 
 				{
 					this.state.light 

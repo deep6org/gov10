@@ -19,6 +19,8 @@ import 'openlaw-elements/dist/openlaw-elements.min.css';
 
 import Account from '../Account/'
 
+import './index.css'
+
 export const POOL_ADDRESSES_PROVIDER_ADDRESS = '0xB53C1a33016B2DC2fF3653530bfF1848a515c8c5'
 const PROTOCOL_DATA_PROVIDER = '0x057835Ad21a177dbdd3090bB1CAE03EaCF78Fc6d'
 const LENDING_POOL = '0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9'
@@ -95,7 +97,8 @@ function Action(){
 
 // function Swap(){
   
-// }
+        // <BalanceBar balances={[{ticker: 'eth', amount: 1.3},{ticker: 'dai', amount: 20},{ticker: 'usdc', amount: 120},]} />
+// } 
 
 function Lend({ selectedProvider, ethPrice }){
 
@@ -103,19 +106,23 @@ function Lend({ selectedProvider, ethPrice }){
   // let provider = ethers.getDefaultProvider('kovan');
 
   return (
-    <div>
+    <div className="lend">
       <ul className="grid">
         <li className="delegate-item">
           lend funds
         </li>
       </ul>
+
       <div>
-        <BalanceBar balances={[{ticker: 'eth', amount: 1.3},{ticker: 'dai', amount: 20},{ticker: 'usdc', amount: 120},]} />
         <Panel />
       </div>
+      <br />
+      <br />
 
       {/* <Swap selectedProvider={provider}/> */}
       <Account />
+      <br/>
+      <br/>
       <>
          collateral: {}
          debt: {}
