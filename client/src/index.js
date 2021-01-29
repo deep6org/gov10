@@ -2,9 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
-import { Lend, Land, Builder, Borrow, Register, Participate } from './components';
+import { Lend, LandClaim, Builder, Borrow, Register, Participate } from './components';
 import reportWebVitals from './reportWebVitals';
 import { Route, Link, BrowserRouter as Router, Switch } from 'react-router-dom'
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const routing = (
   <Router>
@@ -17,7 +18,7 @@ const routing = (
       <Route path="/build" component={Builder} />
 
       <Route path="/lend" component={Lend} />
-      <Route path="/land" component={Land} />
+      <Route path="/land" component={LandClaim} />
       <Route path="/participate" component={Participate} />
     </Switch>
     </div>

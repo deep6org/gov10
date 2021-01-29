@@ -9,3 +9,12 @@
     width: 100px;
     float: left;
 }
+
+.input-num {
+	height: 35px !important;
+}
+
+.simple-form {
+	text-align: center;
+	width: 100%;
+}

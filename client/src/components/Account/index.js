@@ -8,6 +8,8 @@ import { ethers } from "ethers";
 import { useWeb3React } from '@web3-react/core'
 import { InjectedConnector } from '@web3-react/injected-connector'
 
+import { abi as IErc20 } from './abis/erc20.json'
+
 let ethersProvider;
 
 export const injectedConnector = new InjectedConnector({
@@ -60,18 +62,28 @@ function getLibrary(provider) {
 export const Wallet = () => {
   const { chainId, account, activate, active } = useWeb3React()
 
+  if(active){
+  	const address = '0xFf795577d9AC8bD7D90Ee22b6C1703490b6512FD'
+  	var contract = new ethers.Contract(address, IErc20, ethersProvider);
+  	contract.balanceOf(account).then((res) => {
+    	console.log(res.toString())
+  	})
+  }
   // get dai balance
 
   const onClick = () => {
     activate(injectedConnector)
+
   }
 
   return (
-    <div>
-      <div>ChainId: {chainId}</div>
-      <div >Account: {account ? account.substring(0,5)+'...' : ''}</div>
+    <div className="simple-form">
+      <div >account: {account ? account.substring(0,5)+'...' : ''}</div>
       {active ? (
-        <div className="flow">✅ </div>
+        <>
+
+        	<div> ✅ </div>
+        </>
       ) : (
         <Button name="connect" onClick={onClick}/>
       )}
@@ -87,10 +99,20 @@ const swapClick = () => {
 
 const approveClick = () => {
 	console.log('approve')
+
+	// input the contract abi, add in the address
+	// add the ability to make a transaction
+	// ethersProvider
 }
 
 const depositClick = () => {
 	console.log('deposit')
+}
+
+const Input = (props) => {
+	const [value, setValue] = useState({target: {value: ""}})
+	console.log(value.target.value)
+	return(<input className="input-num" onChange={setValue} />)
 }
 
 const Button = (props) => {
@@ -105,8 +127,6 @@ const Account = () => {
 
   		{/*swap*/}
       <br />
-      <br />
-      <br />
   		<Button name={"Swap"} onClick={swapClick}/>
   		<Button name={"Approve"} onClick={approveClick}/>
   		<Button name={"Deposit"} onClick={depositClick}/>
@@ -118,7 +138,28 @@ const Account = () => {
   )
 }
 
+const BorrowerAccount = () => {
+  return (
+    <Web3ReactProvider getLibrary={getLibrary}>
+      <Wallet />
+      {/*wallet*/}
+
+  		{/*swap*/}
+      <br />
+      	<div className="simple-form">
+      	<Input />
+  		<Button name={"Approve"} onClick={approveClick}/>
+      	</div>
+
+  		{/*approve*/}
+
+  		{/*deposit*/}
+    </Web3ReactProvider>
+  )
+}
 
 
+
+export {BorrowerAccount}
 export default Account
 

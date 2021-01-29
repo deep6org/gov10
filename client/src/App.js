@@ -358,7 +358,7 @@ function Footer(props: any){
 function Header(props: any){
   return(
     <div className='header'>
-      gov^10
+      gov10
       <div style={{color: 'grey', paddingTop: '10px'}}>
         move to (the) orbit, take back attention
       </div>
@@ -407,9 +407,10 @@ function Main(){
       view.push(<Profile setState={setState} />)
       view.push(<Prompt state={state} setState={setState} message={"we start together, here"} prompt={"< back"} back={true}/>)
       break;
-    // case 1:
-    //   view.push(<Lend/>)
-    //   break;
+    default:
+      view.push(<Matter setLand={setLand} setState={setState}/>)
+      view.push(<Footer />)
+      break;
   }
 
   return view
