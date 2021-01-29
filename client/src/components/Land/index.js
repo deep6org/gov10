@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from "react";
-// import script
-import './farmOS-map.js'
-import './mapbox.js'
 import './index.css'
-
+// import script
 import Header from '../Header'
 import {Matter} from '../Matter'
 import {Prompt} from '../Prompt'
-
-
+require('./farmOS-map.js')
+require('./mapbox.js')
 
 class Land extends React.Component {
 
@@ -43,7 +40,8 @@ class Land extends React.Component {
 		  geojson: {
 		    type: 'Polygon',
 		    coordinates: [
-		      [[30, 10], [40, 40], [20, 40], [10, 20], [30, 10]]
+		      // [[-80, 20], [20, 40], [10, 20], [30, 10]]
+		      [[-80, 50], [-80, 51], [-81, 49], [-81, 52]]
 		    ]
 		  }, // REQUIRED! (either this or `url`)
 		  color: 'orange', // defaults to 'orange'
