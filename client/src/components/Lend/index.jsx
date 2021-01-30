@@ -9,6 +9,8 @@ import { abi as IDataProvider } from './abis/ProtocolDataProvider.json'
 import { abi as ILendingPool } from './abis/LendingPool.json'
 import { abi as IPriceOracle } from './abis/PriceOracle.json'
 
+import {Container, Row, Col, Modal, Button} from 'react-bootstrap'
+
 // import Swap from "../Swap/index"
 import { ethers } from "ethers";
 
@@ -20,6 +22,10 @@ import 'openlaw-elements/dist/openlaw-elements.min.css';
 import Account from '../Account/'
 
 import './index.css'
+
+import axios from 'axios'
+
+import { parseUnits, formatUnits, formatEther } from "@ethersproject/units";
 
 export const POOL_ADDRESSES_PROVIDER_ADDRESS = '0xB53C1a33016B2DC2fF3653530bfF1848a515c8c5'
 const PROTOCOL_DATA_PROVIDER = '0x057835Ad21a177dbdd3090bB1CAE03EaCF78Fc6d'
@@ -114,7 +120,8 @@ function Action(){
 
 function DebtList(props){
 
-  const debts =[]
+  const [fetched, setfetched] = useState(false)
+  const [debts, setDebts] = useState([])
 
   // db.createReadStream({ keys: true, values: false })
   // .on('data', function (data) {
@@ -122,7 +129,26 @@ function DebtList(props){
   //   debts.push(data)
   // })
 
-  useEffect(() => {
+  useEffect( () => {
+
+    async function fetchProposals() {
+      try {
+          const response = await axios.get("http://localhost:3001/list");
+          console.log(response.data);
+          response.data.forEach((debt) => {
+            // debts.push(debt)
+            console.log(debt)
+            setDebts(response.data)
+          })
+          setfetched(true)
+      } catch (err) {
+          console.error(err);
+      }
+
+    }
+
+    !fetched && fetchProposals()
+
     // feed.append('hello')
     // feed.append('world', function (err) {
     //   if (err) throw err
@@ -141,58 +167,105 @@ function DebtList(props){
     //     await db.put('foo', data)
 
     //   }, 2000)
-  })
+  }, [])
 
 
 
-  const debtList = debts.map((d) => {
-    return <Debt {...d}/>
+  const debtList = debts.map((d, k) => {
+    console.log('DEBT')
+    return <Debt setId={props.setId}i={++k} {...d}/>
   })
 
   return (
-    <>
+    <div className="debt">
+      <Row>
+        <Col>
+          {`id`}
+        </Col>
+        <Col>
+          {'debt'}
+        </Col>
+        <Col>
+          {'repayment'}
+        </Col>
+        <Col>
+          {'decision'}
+        </Col>
+      </Row>
+      <br/>
+
       {debtList}
-    </>)
+    </div>)
 }
 
 function Debt(props) {
+  const clicked = (id) => {
+    console.log("go")
+    console.log(id)
+    props.setId(id)
+  }
+
   return (
     <div>
-      {JSON.stringify(props)}
+      <Row>
+        <Col>
+          {`# ${props.i}`}
+        </Col>
+        <Col>
+          {props.debt}
+        </Col>
+        <Col>
+          {props.repayment}
+        </Col>
+        <Col>
+          <div onClick={() => props.setId(props.i)} style={{cursor: 'crosshair', fontSize: '20px'}}>{"»"}</div>
+        </Col>
+      </Row>
+     
     </div>
     )
 }
 
+const placements = {
+  0:"https://globalnews.ca/wp-content/uploads/2019/12/orbit-pic-3-1024x576.jpg?quality=85&strip=all",
+  1:"https://globalnews.ca/wp-content/uploads/2019/12/orbit-pic-3-1024x576.jpg?quality=85&strip=all",
+  2:"https://i.pinimg.com/564x/ed/09/47/ed09478d4cb05ef11e9050b013744a90.jpg",
+  3:"https://i.pinimg.com/564x/9a/c2/b1/9ac2b14e9cf1f8f69211a77b003a650e.jpg",
+  4:"",
+  5:"",
+  6:"",
+  7:"",
+  8:"",
+  9:""
+}
+
 function Lend({ selectedProvider, ethPrice }){
 
-
+  const [modal, setModal] = useState(false)
+  const [amount, setAmount] = useState(0)
+  const [id, setId] = useState(0)
   // let provider = ethers.getDefaultProvider('kovan');
 
   return (
     <div className="lend">
       <ul className="grid">
-        <li className="delegate-item">
+        <li className="land-item">
           lend funds
+         {id != 0 ? <img src={placements[id]} className="thumb-nail"/> : ''}
         </li>
       </ul>
 
       <div>
-        <Panel />
+        <Panel/>
       </div>
-      <br />
+      {amount !=0 ? `delegate: ${amount}` : ''}
       <br />
 
       {/* <Swap selectedProvider={provider}/> */}
-      <Account />
+      <Account id={id} setModal={setModal} />
       <br/>
       <br/>
-      <DebtList />
-      <>
-         collateral: {}
-         debt: {}
-         allowance: {}
-      </>
-
+      <DebtList setId={setId}/>
     </div>
   )
 }

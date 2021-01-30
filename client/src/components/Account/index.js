@@ -11,10 +11,13 @@ import { parseUnits, formatUnits, formatEther } from "@ethersproject/units";
 
 import { abi as IErc20 } from './abis/erc20.json'
 import { abi as ICreditExecutor } from './abis/creditExecutor.json'
+import {Container, Row, Col, Modal, Button} from 'react-bootstrap'
 
 let ethersProvider;
 let daiContractAddress = "0xFf795577d9AC8bD7D90Ee22b6C1703490b6512FD";
 let creditExecutorAddress = "0x5e573955221AE2c061C534A20C8F5Ba2A15C23a8";
+
+
 
 export const injectedConnector = new InjectedConnector({
   supportedChainIds: [
@@ -100,10 +103,12 @@ export const Wallet = (props) => {
           account, 
           new ethers.Contract("0xFf795577d9AC8bD7D90Ee22b6C1703490b6512FD", IErc20, ethersProvider.getSigner())
           )
-        console.log(balance)
-        console.log(balance.toString())
-        props.setBalance(formattedValue(balance, 18))
-        props.setAccount(account)
+        if(balance != undefined){
+          console.log(balance)
+          console.log(balance.toString())
+          props.setBalance(formattedValue(balance, 18))
+          props.setAccount(account)
+        }
       }else {
         console.log('provider NOT_SET')
       }
@@ -141,24 +146,24 @@ export const Wallet = (props) => {
 
   return (
     <div className="simple-form">
-      <div >account: {account ? account.substring(0,5)+'...' : ''}</div>
-      <div >dai balance: {props.balance}</div>
       {active ? (
         <>
-
+          <div >account: {account ? account.substring(0,5)+'...' : ''}</div>
+          <div >dai balance: {props.balance}</div>
         	<div> ✅ </div>
         </>
       ) : (
-        <Button name="connect" onClick={() => onClick()}/>
+        <Button name="connect" onClick={() => onClick()}>^</Button>
       )}
     </div>
   )
 }
 
 // 
-const swapClick = () => {
+const swapClick = (setModal) => {
 	console.log('swap')
-	console.log(ethersProvider.getSigner().address)
+	// console.log(ethersProvider.getSigner().address)
+  setModal(true)
 }
 
 const approveClick = async (repay) => {
@@ -168,7 +173,7 @@ const approveClick = async (repay) => {
 	// add the ability to make a transaction
   // const _contract = new ethers.Contract("0xFf795577d9AC8bD7D90Ee22b6C1703490b6512FD", ICreditExecutor, ethersProvider.getSigner())
   // newBalance = await _contract.balanceOf(_account)
-
+  console.log(repay)
   let amountToApprove = parseUnits(repay.toString(), 18);
 
   let daiContract = new ethers.Contract(daiContractAddress, IErc20, ethersProvider.getSigner());
@@ -183,16 +188,54 @@ const depositClick = () => {
 const Input = (props) => {
 	const [value, setValue] = useState({target: {value: ""}})
 	console.log(value.target.value)
+  props.setApproval(value)
 	return(<input className="input-num" onChange={setValue} />)
 }
 
-const Button = (props) => {
-	return(<button type="button" className="but" onClick={props.onClick}>{props.name}</button>)
+function MyButton(props) {
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
+  function renderSwitch(param) {
+    switch(param) {
+      case 'Swap':
+        return 'Swap';
+      case 'Approve':
+        return 'Approval';
+      case 'Deposit':
+        return 'Deposit';
+      default:
+        return 'x error x';
+    }
+  }
+
+  return (
+    <>
+      <button type="button" disabled={props.disabled} className="but" onClick={handleShow}>{props.name}</button>
+
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Swap to deposit</Modal.Title>
+        </Modal.Header>
+          {renderSwitch(props.name)}
+          <Modal.Body>Woohoo, you're reading this text in a modal!</Modal.Body>
+
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
+  );
 }
 
-const Account = () => {
+const Account = (props) => {
   const [account, setAccount ] = useState('')
   const [balance, setBalance ] = useState('')
+  console.log(props.id)
   return (
     <Web3ReactProvider getLibrary={getLibrary}>
       <Wallet balance={balance} setBalance={setBalance} setAccount={setAccount}/>
@@ -200,9 +243,9 @@ const Account = () => {
 
   		{/*swap*/}
       <br />
-  		<Button name={"Swap"} onClick={swapClick}/>
-  		<Button name={"Approve"} onClick={approveClick}/>
-  		<Button name={"Deposit"} onClick={depositClick}/>
+  		<MyButton name={"Swap"} onClick={swapClick(props.setModal)}/>
+  		<MyButton name={"Approve"} onClick={approveClick}/>
+  		<MyButton disabled={props.id == 0} name={"Deposit"} onClick={depositClick}/>
 
   		{/*approve*/}
 
@@ -212,6 +255,7 @@ const Account = () => {
 }
 
 const BorrowerAccount = () => {
+  const [approval, setApproval ] = useState(0)
   const [account, setAccount ] = useState('')
   const [balance, setBalance ] = useState('')
 
@@ -223,8 +267,8 @@ const BorrowerAccount = () => {
   		{/*swap*/}
       <br />
       	<div className="simple-form">
-      	<Input />
-  		<Button name={"Approve"} onClick={async () => await approveClick(balance)}/>
+      	<Input setApproval={setApproval}/>
+        <button type="button" className="but" onClick={async () => await approveClick(balance)}>{"Approve"}</button>
       	</div>
 
   		{/*approve*/}
