@@ -1,0 +1,29 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "OracleClient",
+  "sourceName": "contracts/OracleClient.sol",
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "getPrice",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x6080604052348015600f57600080fd5b5060888061001e6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c806398d5fdca14602d575b600080fd5b60336049565b6040518082815260200191505060405180910390f35b6000606490509056fea264697066735822122080a32e508ba0a1fab629f180bcc707c6bd5e190a822e17394d42a44276553f6464736f6c63430007030033",
+  "deployedBytecode": "0x6080604052348015600f57600080fd5b506004361060285760003560e01c806398d5fdca14602d575b600080fd5b60336049565b6040518082815260200191505060405180910390f35b6000606490509056fea264697066735822122080a32e508ba0a1fab629f180bcc707c6bd5e190a822e17394d42a44276553f6464736f6c63430007030033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

@@ -99,6 +99,69 @@ function Action(){
   
         // <BalanceBar balances={[{ticker: 'eth', amount: 1.3},{ticker: 'dai', amount: 20},{ticker: 'usdc', amount: 120},]} />
 // } 
+// var level = require('level')
+// var db = level('my-db')
+
+// var hypercore = require('hypercore')
+// var ram = require('random-access-memory')
+// var feed = hypercore(ram, {valueEncoding: 'utf-8'})
+
+// const Hyperbee = require('hyperbee')
+// const db = new Hyperbee(feed, {
+//   keyEncoding: 'utf-8', // can be set to undefined (binary), utf-8, ascii or and abstract-encoding
+//   valueEncoding: 'binary' // same options as above
+// })
+
+function DebtList(props){
+
+  const debts =[]
+
+  // db.createReadStream({ keys: true, values: false })
+  // .on('data', function (data) {
+  //   console.log('key=', data)
+  //   debts.push(data)
+  // })
+
+  useEffect(() => {
+    // feed.append('hello')
+    // feed.append('world', function (err) {
+    //   if (err) throw err
+    //   feed.get(0, console.log) // prints hello
+    //   feed.get(1, console.log) // prints world
+    // })
+
+    // console.log('calling USE_EFFECT')
+
+    //   setTimeout(async () => {
+    //     console.log('calling setTimeout')
+    //     const data = {
+    //       term: 5,
+    //       amount: 10000
+    //     }
+    //     await db.put('foo', data)
+
+    //   }, 2000)
+  })
+
+
+
+  const debtList = debts.map((d) => {
+    return <Debt {...d}/>
+  })
+
+  return (
+    <>
+      {debtList}
+    </>)
+}
+
+function Debt(props) {
+  return (
+    <div>
+      {JSON.stringify(props)}
+    </div>
+    )
+}
 
 function Lend({ selectedProvider, ethPrice }){
 
@@ -123,6 +186,7 @@ function Lend({ selectedProvider, ethPrice }){
       <Account />
       <br/>
       <br/>
+      <DebtList />
       <>
          collateral: {}
          debt: {}

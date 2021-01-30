@@ -1,6 +1,6 @@
-/* eslint-disable */
+/*eslint no-unused-expressions: [2, { allowShortCircuit: true, allowTernary: true }]*/
 (function () {
-  farmOS.map.behaviors.mapbox = {
+  window.farmOS.map.behaviors.mapbox = {
     attach: function (instance) {
 
       // Test MapBox API key (only works with farmos.github.io).
