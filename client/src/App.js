@@ -14,6 +14,11 @@ import { EffectComposer, SSAO } from 'react-postprocessing'
 
 import { Link, useHistory } from 'react-router-dom'
 import {Prompt, DualPrompt} from './components/Prompt'
+
+import {Container, Row, Col} from 'react-bootstrap'
+
+import GlobalState from './contexts/GlobalState'; 
+
 // import './styles.css'
 
 // https://codesandbox.io/embed/r3f-gamma-correction-kmb9i
@@ -240,21 +245,23 @@ function Matter(props) {
   )
 }
 
-function setSelect(k){
+function setSelect(k, setTile){
   factions[k].selected = true;
   console.log(factions[k])
+  setTile(k)
 }
 
 function BioPool(){
 
      const [isPool, setPool] = useState(0);
+     const [tile, setTile] = useState(-1);
      console.log(isPool)
   // here we see and choose
     const tiles = [...Array(9).keys()].map(k => {
 
         return <li 
                   className="grid-item"
-                  onClick={() => setSelect(k)}
+                  onClick={() => setSelect(k, setTile)}
                   onMouseEnter={() => someHandler(k)} 
                >
                <div onClick={() => {setPool(1)}}>
@@ -277,7 +284,7 @@ function BioPool(){
             factored={0.8}
             count={100} 
             color={factions[k].aura}
-            onClick={() => setSelect(k)} 
+            onClick={() => setSelect(k, setTile)} 
             />
             <EffectComposer multisampling={0}>
               <SSAO samples={31} radius={20} intensity={40} luminanceInfluence={0.1} color="black" />
@@ -289,10 +296,44 @@ function BioPool(){
 
      return(
        <div>
-         
+       <Row>
+           <Col xs="3">
+           </Col>
+           <Col xs="6">
            <ul class="grid">
             {tiles}
           </ul >
+          </Col >
+          <Col xs="3">
+            {tile >= 0 ? (factions[tile].id) : ''
+
+          //     <Canvas
+          //   shadowMap
+          //   width={100}
+          //   height={100}
+          //   gl={{ alpha: false, antialias: false }}
+          //   camera={{ fov: 75, position: [0, 0, 70], near: 10, far: 150 }}
+          //   onCreated={(state) => state.gl.setClearColor('white')}
+          //   style={{margin: '10px', width: "90%"}}
+            
+          //   >
+          //   <ambientLight intensity={1.5} />
+          //   <pointLight position={[100, 100, 100]} intensity={2} castShadow />
+          //   <pointLight position={[-100, -100, -100]} intensity={50} color="red" />
+          //   <Swarm 
+          //   factored={0.8}
+          //   count={100} 
+          //   color={factions[tile].aura}
+          //   />
+          //   <EffectComposer multisampling={0}>
+          //     <SSAO samples={31} radius={20} intensity={40} luminanceInfluence={0.1} color="black" />
+          //   </EffectComposer>
+          // </Canvas>
+
+        }
+           </Col>
+       </Row>
+
        </div>
       )
 }
@@ -418,6 +459,7 @@ function Main(){
 
 
 function App() {
+
   // tiles.push(
   //   <li class="grid-item" onClick={click}>
   //   <Canvas

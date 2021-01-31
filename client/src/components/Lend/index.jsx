@@ -24,7 +24,7 @@ import Account from '../Account/'
 import './index.css'
 
 import axios from 'axios'
-
+import { Link, useHistory } from 'react-router-dom'
 import { parseUnits, formatUnits, formatEther } from "@ethersproject/units";
 
 export const POOL_ADDRESSES_PROVIDER_ADDRESS = '0xB53C1a33016B2DC2fF3653530bfF1848a515c8c5'
@@ -32,43 +32,44 @@ const PROTOCOL_DATA_PROVIDER = '0x057835Ad21a177dbdd3090bB1CAE03EaCF78Fc6d'
 const LENDING_POOL = '0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9'
 const PRICE_ORACLE = '0xa50ba011c48153de246e5192c8f9258a2ba79ca9'
 
-// OpenLaw APIClient: https://docs.openlaw.io/api-client/#authentication
-//  - used to fetch geo data in our `Address` field type
-//  - to run against your own private OpenLaw instance: 'https://[YOUR.INSTANCE.URL]';
-const apiClient = new APIClient('https://lib.openlaw.io/api/v1/default');
-// You can login from a Node server (e.g. Express), and be sure to pass the `OPENLAW_JWT`  on to the client.
-// If you require your users to have an account on your instance, create a login page on the client.
-apiClient.login('@gmail.com', 'p');
 
-// https://docs.openlaw.io/openlaw-object/#compiletemplate
-const { compiledTemplate } = Openlaw.compileTemplate('**Name**: [[First Name]] [[Last Name]]');
-// https://docs.openlaw.io/openlaw-object/#execute
-// https://docs.openlaw.io/openlaw-object/#getexecutedvariables
-// typically the parameters object will be updated in state via 
-// an `onChangeFunction` handler (or in a state manager like Redux
-// or MobX) throughout the lifetime of the app
-const parameters = {};
+// // OpenLaw APIClient: https://docs.openlaw.io/api-client/#authentication
+// //  - used to fetch geo data in our `Address` field type
+// //  - to run against your own private OpenLaw instance: 'https://[YOUR.INSTANCE.URL]';
+// const apiClient = new APIClient('https://lib.openlaw.io/api/v1/default');
+// // You can login from a Node server (e.g. Express), and be sure to pass the `OPENLAW_JWT`  on to the client.
+// // If you require your users to have an account on your instance, create a login page on the client.
+// apiClient.login('@gmail.com', 'p');
 
-const { executionResult, errorMessage } = Openlaw.execute(compiledTemplate, {}, parameters, {});
-const variables = Openlaw.getExecutedVariables(executionResult, {});
+// // https://docs.openlaw.io/openlaw-object/#compiletemplate
+// const { compiledTemplate } = Openlaw.compileTemplate('**Name**: [[First Name]] [[Last Name]]');
+// // https://docs.openlaw.io/openlaw-object/#execute
+// // https://docs.openlaw.io/openlaw-object/#getexecutedvariables
+// // typically the parameters object will be updated in state via 
+// // an `onChangeFunction` handler (or in a state manager like Redux
+// // or MobX) throughout the lifetime of the app
+// const parameters = {};
 
-// helpful for logging in development, or throwing exceptions at runtime
-if (errorMessage) {
-console.error('Openlaw Execution Error:', errorMessage);
-}
+// const { executionResult, errorMessage } = Openlaw.execute(compiledTemplate, {}, parameters, {});
+// const variables = Openlaw.getExecutedVariables(executionResult, {});
 
-const onChange = (key, value) => {
-console.log('KEY:', key, 'VALUE:', value);
-parameters[key] = value
+// // helpful for logging in development, or throwing exceptions at runtime
+// if (errorMessage) {
+// console.error('Openlaw Execution Error:', errorMessage);
+// }
 
-console.log(variables)
-console.log(executionResult)
-}
+// const onChange = (key, value) => {
+// console.log('KEY:', key, 'VALUE:', value);
+// parameters[key] = value
 
-const onSign = () => {
-console.log('signing')
+// console.log(variables)
+// console.log(executionResult)
+// }
 
-}
+// const onSign = () => {
+// console.log('signing')
+
+// }
 
 // <OpenLawForm
 //   // https://docs.openlaw.io/openlaw-elements/#required-parameters

@@ -1,4 +1,5 @@
 export { default as Lend } from "./Lend";
+export { default as Delegate } from "./Delegate";
 export { default as LandClaim } from "./Land";
 
 export { default as Builder } from "./Builder";

@@ -24,6 +24,7 @@
     "bootstrap": "^4.6.0",
     "cipher-base": "^1.0.4",
     "eth-hooks": "^1.1.2",
+    "html2canvas": "^1.0.0-rc.7",
     "level": "^6.0.1",
     "nice-color-palettes": "^3.0.0",
     "openlaw": "^0.2.47",
@@ -37,6 +38,7 @@
     "react-scripts": "4.0.1",
     "react-three-fiber": "^5.3.14",
     "three": "^0.124.0",
+    "use-react-screenshot": "^1.0.2",
     "valtio": "^0.6.3",
     "web-vitals": "^0.2.4"
   },

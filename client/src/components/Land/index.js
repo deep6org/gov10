@@ -1,9 +1,13 @@
+/*eslint no-unused-expressions: [2, { allowShortCircuit: true, allowTernary: true }]*/
+
 import React, { useState, useEffect } from "react";
 import './index.css'
 // import script
 import Header from '../Header'
 import {Matter} from '../Matter'
 import {Prompt} from '../Prompt'
+
+
 require('./farmOS-map.js')
 require('./mapbox.js')
 

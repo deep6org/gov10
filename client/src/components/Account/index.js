@@ -13,10 +13,15 @@ import { abi as IErc20 } from './abis/erc20.json'
 import { abi as ICreditExecutor } from './abis/creditExecutor.json'
 import {Container, Row, Col, Modal, Button} from 'react-bootstrap'
 
+import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUniswapV2Router02.json'
+
+
 let ethersProvider;
 let daiContractAddress = "0xFf795577d9AC8bD7D90Ee22b6C1703490b6512FD";
 let creditExecutorAddress = "0x5e573955221AE2c061C534A20C8F5Ba2A15C23a8";
 
+export const ROUTER_ADDRESS = '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D'//kovan
+// export const ROUTER_ADDRESS = '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D'
 
 
 export const injectedConnector = new InjectedConnector({
@@ -83,15 +88,7 @@ return convertValue(_amountInUnits, _decimals, _toEthMultiplier).toLocaleString(
 }
 
 export const Wallet = (props) => {
-  
-  // const [active, setActive ] = useState(false)
-  // const [account, setAccount ] = useState('')
   const { chainId, account, activate, active } = useWeb3React()
-
-  // if(active){
-  // 	const address = '0xFf795577d9AC8bD7D90Ee22b6C1703490b6512FD'
-  // 	var contract = new ethers.Contract(address, IErc20, ethersProvider);
-  // }
 
     useEffect(async () => {
       console.log(`use effect -- account: ${account}`)
@@ -106,6 +103,7 @@ export const Wallet = (props) => {
         if(balance != undefined){
           console.log(balance)
           console.log(balance.toString())
+          props.setBigbalance(balance)
           props.setBalance(formattedValue(balance, 18))
           props.setAccount(account)
         }
@@ -113,35 +111,10 @@ export const Wallet = (props) => {
         console.log('provider NOT_SET')
       }
 
-    }, [active,ethersProvider])
+    }, [account,active,ethersProvider])
 
-  	// if(active){
-  	// 	console.log(`use effect ${account}`)
-   //  	const balance = getTokenBalance(
-   //  		'0xFf795577d9AC8bD7D90Ee22b6C1703490b6512FD', 
-   //  		account, 
-   //  		new ethers.Contract("0xFf795577d9AC8bD7D90Ee22b6C1703490b6512FD", IErc20, ethersProvider)
-   //  	)
-   //  	setBalance(balance)
-  	// }else {
-
-   //  }
-  // get dai balance
-
-  const onClick = async () => {
+  const onActivateClick = async () => {
       activate(injectedConnector)
-
-      // setTimeout(async (account) => {
-      //   console.log(`use effect ${account}`)
-      //   const balance = await getTokenBalance(
-      //     'DAI', 
-      //     account, 
-      //     new ethers.Contract("0xFf795577d9AC8bD7D90Ee22b6C1703490b6512FD", IErc20, ethersProvider)
-      //     )
-      //   console.log(balance)
-      // setBalance(balance)
-
-      // }, 4000, account)
   }
 
   return (
@@ -153,32 +126,58 @@ export const Wallet = (props) => {
         	<div> ✅ </div>
         </>
       ) : (
-        <Button name="connect" onClick={() => onClick()}>^</Button>
+        <Button name="connect" style={{marginLeft: '-9px'}} onClick={() => onActivateClick()}>⎈</Button>
       )}
     </div>
   )
 }
 
-// 
-const swapClick = (setModal) => {
-	console.log('swap')
-	// console.log(ethersProvider.getSigner().address)
+const swapClick = async (setModal) => {
   setModal(true)
 }
 
-const approveClick = async (repay) => {
+const approveClick = async (approve) => {
 	console.log('approve')
 
 	// input the contract abi, add in the address
 	// add the ability to make a transaction
   // const _contract = new ethers.Contract("0xFf795577d9AC8bD7D90Ee22b6C1703490b6512FD", ICreditExecutor, ethersProvider.getSigner())
   // newBalance = await _contract.balanceOf(_account)
-  console.log(repay)
-  let amountToApprove = parseUnits(repay.toString(), 18);
+  console.log(approve)
+  let amountToApprove = parseUnits((approve.replace(',','')).toString(), 18);
 
   let daiContract = new ethers.Contract(daiContractAddress, IErc20, ethersProvider.getSigner());
   let res = await daiContract.approve(creditExecutorAddress, amountToApprove)
   console.log(res)
+}
+
+const approveClickDelegator = async (approve) => {
+  console.log('approve')
+
+  // input the contract abi, add in the address
+  // add the ability to make a transaction
+  // const _contract = new ethers.Contract("0xFf795577d9AC8bD7D90Ee22b6C1703490b6512FD", ICreditExecutor, ethersProvider.getSigner())
+  // newBalance = await _contract.balanceOf(_account)
+  console.log(approve)
+  console.log(approve)
+  let amountToApprove;
+
+  if(ethersProvider){
+
+    if(approve == 0){
+      amountToApprove = parseUnits((0).toString(), 18);
+
+    }else{
+      amountToApprove = parseUnits((approve.toString().replace(',','')).toString(), 18);
+    }
+
+
+    let daiContract = new ethers.Contract(daiContractAddress, IErc20, ethersProvider.getSigner());
+    let res = await daiContract.approve(creditExecutorAddress, amountToApprove)
+    console.log(res)
+  }else{
+    console.log('provider_NOT_SET')
+  }
 }
 
 const depositClick = () => {
@@ -192,6 +191,59 @@ const Input = (props) => {
 	return(<input className="input-num" onChange={setValue} />)
 }
 
+const Swapper = (props) => {
+  const { chainId, account, activate, active } = useWeb3React()
+  const [value, setValue] = useState({target: {value: 0}})
+  console.log(value.target.value)
+  // props.setSwap(value)
+  console.log(ethersProvider)  
+
+  const performSwap = async () => {
+    const daiFaucetAddress = "0xa94C8CeFD6F9B4a75b13536616871C67a95130b2";
+    const daiContractAddress = "0xFf795577d9AC8bD7D90Ee22b6C1703490b6512FD";
+
+    console.log('swap')
+
+    // const [owner] = ethersProvider.getSigners().address
+    // const [swapper] = ethersProvider.getSigners().address
+    console.log(account)
+
+    const params = [{
+      from: account,
+      to: daiFaucetAddress,
+      value: ethers.utils.parseUnits('0.01', 'ether').toHexString()
+    }];
+
+    console.log(params)
+
+    const transactionHash = await ethersProvider.send('eth_sendTransaction', params)
+    console.log(transactionHash)
+    props.setShow(false)
+    setTimeout()
+  }
+
+  return(
+    <>
+      <div style={{textAlign: 'center'}}>
+      <Container style={{height: '100px', marginTop: '30px'}}>
+      <Row>
+        <Col>
+        <input className="input-num-swap" onChange={setValue} /> <div style={{margin: '6px', marginLeft: "5px"}}>eth</div>
+        </Col>
+        <Col>
+          {"→"}
+        </Col>
+        <Col>
+        {value.target.value * 1300 + ' dai'}
+        </Col>
+      </Row>
+        <button className="but" onClick={performSwap} name="swap">swap</button>
+      </Container>
+      </div>
+    </>
+    )
+}
+
 function MyButton(props) {
   const [show, setShow] = useState(false);
 
@@ -201,11 +253,13 @@ function MyButton(props) {
   function renderSwitch(param) {
     switch(param) {
       case 'Swap':
-        return 'Swap';
+        return (
+          <>
+          {/*balance*/}
+          <Swapper setShow={setShow}/>
+          </>);
       case 'Approve':
         return 'Approval';
-      case 'Deposit':
-        return 'Deposit';
       default:
         return 'x error x';
     }
@@ -217,11 +271,9 @@ function MyButton(props) {
 
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Swap to deposit</Modal.Title>
+          <Modal.Title>{props.name} to deposit</Modal.Title>
         </Modal.Header>
           {renderSwitch(props.name)}
-          <Modal.Body>Woohoo, you're reading this text in a modal!</Modal.Body>
-
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
             Close
@@ -232,20 +284,49 @@ function MyButton(props) {
   );
 }
 
+function MyFlatButton(props) {
+  return (
+    <>
+      <button type="button" disabled={props.disabled} className="but" onClick={async () => {
+        await props.click(props.bigbalance)
+      }
+      }>{props.name}</button>
+
+    </>
+  );
+}
+function MyDelegateButton(props) {
+  const history = useHistory();
+
+  return (
+    <>
+      <button type="button" disabled={props.disabled} className="but" onClick={async () =>history.push("/delegate")
+      }>{props.name}</button>
+
+    </>
+  );
+}
+
 const Account = (props) => {
   const [account, setAccount ] = useState('')
-  const [balance, setBalance ] = useState('')
+  const [balance, setBalance ] = useState(0)
+  const [bigbalance, setBigbalance ] = useState(0)
+  const [approved, setApproved ] = useState(false)
+  const history = useHistory();
+
   console.log(props.id)
+  console.log(account)
   return (
     <Web3ReactProvider getLibrary={getLibrary}>
-      <Wallet balance={balance} setBalance={setBalance} setAccount={setAccount}/>
+      <p>{'⇪'}</p>
+      <Wallet balance={balance} setBigbalance={setBigbalance} setBalance={setBalance} setAccount={setAccount}/>
       {/*wallet*/}
 
   		{/*swap*/}
-      <br />
-  		<MyButton name={"Swap"} onClick={swapClick(props.setModal)}/>
-  		<MyButton name={"Approve"} onClick={approveClick}/>
-  		<MyButton disabled={props.id == 0} name={"Deposit"} onClick={depositClick}/>
+
+  		<MyButton disabled={account == ''} name={"Swap"} onClick={async () => await swapClick(props.setModal)}/>
+  		<MyFlatButton disabled={account == ''} name={"Approve"} click={approveClickDelegator} bigbalance={bigbalance}/>
+  		<MyDelegateButton disabled={props.id == 0} name={"Deposit"}/>
 
   		{/*approve*/}
 
@@ -257,15 +338,16 @@ const Account = (props) => {
 const BorrowerAccount = () => {
   const [approval, setApproval ] = useState(0)
   const [account, setAccount ] = useState('')
-  const [balance, setBalance ] = useState('')
+  const [balance, setBalance ] = useState(0)
+  const [bigbalance, setBigbalance ] = useState(0)
+
 
   return (
     <Web3ReactProvider getLibrary={getLibrary}>
-      <Wallet balance={balance} setBalance={setBalance} setAccount={setAccount}/>
+      <Wallet balance={balance} setBigbalance={setBigbalance} setBalance={setBalance} setAccount={setAccount}/>
       {/*wallet*/}
 
   		{/*swap*/}
-      <br />
       	<div className="simple-form">
       	<Input setApproval={setApproval}/>
         <button type="button" className="but" onClick={async () => await approveClick(balance)}>{"Approve"}</button>

@@ -10,6 +10,11 @@
     float: left;
 }
 
+.input-num-swap {
+	float: left;
+	width: 100px;
+	height: 35px !important;
+}
 .input-num {
 	height: 35px !important;
 }
@@ -17,4 +22,6 @@
 .simple-form {
 	text-align: center;
 	width: 100%;
+	height: 75px;
+	margin: 5px;
 }

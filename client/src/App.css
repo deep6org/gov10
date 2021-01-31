@@ -180,9 +180,9 @@ p {
   align-content: flex-start;
   align-items: center;
   justify-content: center;
-  max-width: 40%;
+  max-width: 80%;
+  margin: auto;
   height: 90%;
-  margin: 0 auto;
   padding: 30px 0 0;
   list-style: none;
 }
