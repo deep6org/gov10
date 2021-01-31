@@ -34,4 +34,9 @@ describe("NFTFactory", function() {
 		const balance = await nftFactory.balanceOf(owner.address)
 		console.log(balance.toString())
 	})
+
+	it('reveals nft', async () => {
+		
+	})
+	
 })

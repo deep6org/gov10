@@ -14,9 +14,14 @@ import {DualPrompt} from '../Prompt'
 import Header from '../Header'
 
 const state = proxy({ dark: false, active: 0, rotation: 0, disabled: false })
+
+const geometry = new THREE.BoxBufferGeometry( 1, 1, 1 )
+const material = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
+const mesh1 = new THREE.Mesh( geometry, material );
+
 const geometries = [
   // TODO: Add colors
-  new THREE.BoxBufferGeometry( 1, 1, 1 ),
+  geometry,
   new THREE.BoxBufferGeometry( 1, 1, 1 ),
   new THREE.BoxBufferGeometry( 1, 1, 1 ),
   new THREE.BoxBufferGeometry( 1, 1, 1 ),
@@ -30,6 +35,20 @@ const geometries = [
   // new THREE.OctahedronGeometry(1.5),
   // new THREE.IcosahedronBufferGeometry(1.5),
 ]
+
+const matter = {
+    0: {name: "mer", color: 'grey'},
+    1: {name: "ven", color: 'pink'},
+    2: {name: "ear", color: 'green'},
+    3: {name: "mar", color: 'orange'},
+    4: {name: "jup", color: 'red'},
+    5: {name: "sat", color: 'yellow'},
+    6: {name: "ura", color: 'blue'},
+    7: {name: "nep", color: 'purple'},
+    8: {name: "all", color: 'lightgrey'},
+  }
+
+
 
 function ToggleButton(props) {
   const a11y = useA11y()
@@ -116,7 +135,7 @@ function Shape({ index, active, ...props }) {
   })
   return (
     <mesh rotation-y={index * 2000} ref={ref} {...props} geometry={geometries[index]}>
-      <meshPhongMaterial />
+      <meshPhongMaterial color={matter[index].color}/>
     </mesh>
   )
 }
@@ -137,7 +156,7 @@ function Carroussel() {
             // adjust 9 to change positioning
             position={[radius * Math.cos(i * ((Math.PI * 2) / 9)), 0, radius * Math.sin(i * ((Math.PI * 2) / 9))]}
             active={snap.active === i}
-            color={name}
+            color={0xff0000}
           />
         </A11y>
       ))}
@@ -149,19 +168,8 @@ function BioInspect(props){
   console.log(props.snap)
   const snap = useProxy(state)
   console.log(props.snap !== undefined)
-  const matter = {
-    0: "mer",
-    1: "ven",
-    2: "ear",
-    3: "mar",
-    4: "jup",
-    5: "sat",
-    6: "ura",
-    7: "nep",
-    8: "all",
-  }
 
-  return(<div className="builder-pool">{snap !== undefined ? matter[snap.active] : ''}</div>)
+  return(<div className="builder-pool">{snap !== undefined ? matter[snap.active].name : ''}</div>)
 }
 
 export default function Builder() {
