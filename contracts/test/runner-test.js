@@ -1754,7 +1754,23 @@ describe("DAIFaucet", function() {
     console.log(res)
   })
   
-  it('gives the borrower power', async () => {
+  it('adds the asset as collateral', async () => {
+  // it.only('gives the borrower power', async () => {
+    const [owner, borrower] = await ethers.getSigners();
+
+    console.log(`Owner: ${owner}`)
+    console.log(`Borrower: ${borrower}`)
+
+    let amount = 10;
+    let amountToBorrow = parseUnits(amount.toString(), 18)
+    console.log('deposit', amountToBorrow.toString())
+
+    const creditExecutor = await ethers.getContractAt("CreditExecutor", creditExecutorAddress);
+    const res = await creditExecutor.setUserUseReserveAsCollateral(daiContractAddress)
+    console.log(res)
+  })
+
+   it('gives the borrower power', async () => {
   // it.only('gives the borrower power', async () => {
     const [owner, borrower] = await ethers.getSigners();
 
@@ -1846,6 +1862,8 @@ describe("DAIFaucet", function() {
                                                 referralCode,
                                                 creditExecutorAddress
                                               )
+
+
 
 
   })

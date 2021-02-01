@@ -15,7 +15,8 @@
   "dependencies": {
     "@ethersproject/units": "^5.0.9",
     "@openzeppelin/contracts": "^3.3.0",
-    "@uniswap/v2-periphery": "^1.1.0-beta.0"
+    "@uniswap/v2-periphery": "^1.1.0-beta.0",
+    "ethereumjs-abi": "^0.6.8"
   },
   "scripts": {
     "deploy:kovan": "npx hardhat run --network kovan ./scripts/deploy.js",

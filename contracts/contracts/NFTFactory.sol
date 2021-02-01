@@ -26,46 +26,79 @@ contract Claimable is Ownable {
 
 contract NFTFactory is ERC721, OracleClient, Claimable {
 
+	using ECRecovery for bytes32;
+
 	struct Land {
 		uint id;
 		uint price;
 		bytes agreement;
-		uint x;
-		uint y;
+		uint period
 	}
 
 	struct Bio {
 		uint id;
 		uint redeemablePrice;
-		bytes location;
+		address toBeOwner;
+		bytes hashedLocation;
 	}
 
-	mapping(uint => Land) public land;
+	event Reveal(address indexed owner, bytes indexed dataKey);
 
-	constructor() ERC721("Gov10", "GOV10") public {}
+	mapping(uint => Land) public landIndexes;
+	mapping(uint => Bio) public bioIndexes;
+
+	constructor() ERC721("Gov10", "GOV10") public {
+		// set rate cap dynamically
+	}
 
     // function 
-    function issue(address owner, bytes memory data) public {
+    function issueNFTCommitment(address owner, uint price, uint weeksAfter, bytes memory dataHash) public {
     	// bio NFT to delegator, and land to 
-    	uint tokenId = super.totalSupply() + 1;
+    	uint tokenId = super.totalSupply();
 
-		super._safeMint(owner, tokenId, data);
+    	// cap on price ownership
+    	// require(cap <= 0.5)
 
-		// TODO: create struct
+    	// creates the bio nft
+    	Bio bio = Bio(tokenId, price * 0.2, owner, dataHash);
+    	bioIndexes[id] = bio;
+
+    	Land land = Land(tokenId, priceLand, dataHash, time);
+    	landIndexes[id] = land;
+
+    	// 
+    	super.approve(address(this), tokenId);
+
+		super._safeMint(msg.sender, tokenId, data);
+
+		_tokenIds++;
     }
 
-	function redeem(address redeemer, bytes _tokenURI, bytes _sig) public {
+    function reveal(address owner, uint tokenId, bytes memory _dataKey, memory bytes salt) public {
+		// get hash,
+		// unpack & see that it equals
+		// check to ensure key
+		// emit in an event
+		emit Reveal(owner, _dataKey)
+
+		bytes32 message = keccak256(abi.encodePacked(owner, _dataKey, salt));
+   		bytes32 preFixedMessage = message.toEthSignedMessageHash();
+    
+    	// Confirm the signature came from the owner, same as web3.eth.sign(...)
+    	require(owner == ECRecovery.recover(preFixedMessage, _sig));
+
+    	// set nft URI
+    	super._setTokenURI(tokenId, _dataKey)
+
+		// makeTransfer
+		// return funds back to owner
+
+	}
+
+	function redeem(bytes _tokenURI, bytes memory _sig) public {
 		// TODO: transfer Bio NFT to land owner
 
 		// Claim and record the nonce
     	require(super.claim(_tokenURI, _sig, address(this)), "Signature is invalid");
-
-
-	}
-
-	function reveal() public {
-		// get hash,
-		// unpack & see that it equals
-		// emit in an event
 	}
 }
