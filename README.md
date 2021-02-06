@@ -17,5 +17,17 @@ The project aims to bridge gaps of spirit (cognition), matter (land), and possib
 ### profile
 ![profile](screenshots/profile.png)
 
-### matter
+### plan
+![build](screenshots/build.png)
+
+### build matter
+![register](screenshots/register.png)
+
+### delegate
+![ritual](screenshots/deposit.png)
+
+### ritual swarm
+![ritual](screenshots/ritual.png)
+
+### plot
 ![matter](screenshots/matter.png)
