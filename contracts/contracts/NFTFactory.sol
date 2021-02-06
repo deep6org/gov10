@@ -40,7 +40,14 @@ contract NFTFactory is ERC721 {
 	}
 
     // function 
-    function issueNFTCommitment(address owner, address _buyer, uint depositAmount, uint weeksAfter, bytes memory dataHash, string memory tokenUri) public {
+    function issueNFTCommitment(
+    	address owner, 
+    	address _buyer, 
+    	uint depositAmount, 
+    	uint weeksAfter, 
+    	bytes memory dataHash, 
+    	string memory tokenUri
+    ) public returns (uint256) {
     	// bio NFT to delegator, and land to 
     	uint tokenId = super.totalSupply();
     	uint tokenIdLand = tokenId + 1;
@@ -74,7 +81,7 @@ contract NFTFactory is ERC721 {
 		super._setTokenURI(tokenIdLand, tokenUri);
 
 		// _tokenIds++;
-
+		return tokenId;
     }
 
     // function reveal(address owner, uint tokenId, string memory tokenKey, bytes memory signature, address buyer) public view returns (uint) {

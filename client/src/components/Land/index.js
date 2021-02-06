@@ -10,7 +10,6 @@ import {Prompt} from '../Prompt'
 require('./farmOS-map.js')
 require('./mapbox.js')
 
-
 class Land extends React.Component {
 
 

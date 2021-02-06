@@ -1,3 +1,5 @@
+pragma solidity ^0.6.0;
+
 import { IERC20, IERC721, ILendingPool, IProtocolDataProvider, IStableDebtToken } from './Interfaces.sol';
 
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";

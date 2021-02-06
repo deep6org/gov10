@@ -20,14 +20,14 @@ async function main() {
 
   // console.log("OracleClient deployed to:", oracle.address);
 
-  const oracleAddress = "0x5Da2ce650C536b485CFcFbDF21Bd77BDdf4333a7"
+  const oracleAddress = "0x84603f06d27e80f82A7aeC21a54160414C77E352"
   // const NFTFactory = await ethers.getContractFactory("NFTFactory");
   // const factory = await NFTFactory.deploy(oracleAddress);
 
   // console.log("NFTFactory deployed to:", factory.address);
 
 
-  const nftFactoryAddress = "0x9728299e76b682F63dD598DaA2B7857EB517C268"
+  const nftFactoryAddress = "0xB59D1866c089abB2b5A6bBe535F18211e432c77C"
 
   const CreditExecutor = await ethers.getContractFactory("CreditExecutor");
   const executor = await CreditExecutor.deploy(nftFactoryAddress, oracleAddress);

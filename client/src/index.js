@@ -33,7 +33,12 @@ const Routing = () => {
 
         <Route path="/register" component={Register} />
         <Route path="/borrow" component={Borrow} />
-        <Route path="/build" component={Builder} />
+
+        <Route path="/build">
+          <GlobalState.Provider value={[state, setState]}>
+            <Builder />
+          </GlobalState.Provider>
+        </Route>
 
         <Route path="/delegate"> 
           <GlobalState.Provider value={[state, setState]}>

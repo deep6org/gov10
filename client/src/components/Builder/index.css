@@ -26,11 +26,52 @@ a {
 
 .builder-wrapper {
   width: 100%;
-  height: 50vh;
+  height: 45vh;
 }
 
 .builder-pool {
   text-align: center;
   margin-top: 20px;
   width: 100%;
+}
+
+
+.spectrum-item-static {
+    display: flex;
+  flex-direction: column;
+  flex-grow: 0;
+  flex-shrink: 0;
+  flex-basis: 120px;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  height: 200px;
+  width: 200px;
+  margin: 10px;
+  margin: 10px;
+  font-size: 1rem;
+  font-weight: 100;
+  color: #656565; 
+  border-radius: 7px;
+  background: white;
+  transform: translate(0, 0);
+  transform: translate3d(0, 0, 0);
+  transition: transform 0.14s ease-in, text-shadow 0.1s ease-in;
+  will-change: transform;
+  cursor: crosshair;
+}
+
+.spectrum-item-static:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: none;
+  border-radius: 3px;
+  transition: opacity 0.1s ease-in;
+  will-change: opacity;
+  opacity: 0;
+  cursor: crosshair;
 }

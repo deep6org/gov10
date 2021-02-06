@@ -2,18 +2,21 @@ import './index.css'
 
 import * as THREE from "three"
 import { Canvas, useFrame, useThree } from "react-three-fiber"
-import React, { Suspense, useRef } from "react"
+import React, { Suspense, useRef, useState, useEffect, useContext } from "react"
 import { ContactShadows } from "@react-three/drei"
 import { A11y, useA11y, A11yAnnouncer } from "@react-three/a11y"
 import { ResizeObserver } from "@juggle/resize-observer"
 import { proxy, useProxy } from "valtio"
 import { EffectComposer, SSAO, SMAA } from "@react-three/postprocessing"
+import GlobalState from '../../contexts/GlobalState';
+import {CopyToClipboard} from 'react-copy-to-clipboard';
+
 
 import {DualPrompt} from '../Prompt'
 
 import Header from '../Header'
 
-const state = proxy({ dark: false, active: 0, rotation: 0, disabled: false })
+const state = proxy({ dark: false, active: 0, rotation: 0, disabled: false, isRedemption: false })
 
 const geometry = new THREE.BoxBufferGeometry( 1, 1, 1 )
 const material = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
@@ -164,16 +167,95 @@ function Carroussel() {
   )
 }
 
+
+function redeem (setRedeem, setKey) {
+  console.log('redeem')
+  // execute a redeem function to reverse the payment
+  console.log('executing transaction')
+  setRedeem(true)
+  // get key from contract
+  setKey("b6a385ba8f14ac4403721c27c6960432791e347b8676641fa381bd95a9e85812")
+
+}
+
+function Prompt(props){
+  
+  const [isGo, setGo] = useState(true);
+  const [isRedeem, setRedeem] = useState(false);
+  const [key, setKey] = useState("");
+  const [copied, setCopied] = useState(false);
+
+  console.log(isRedeem)
+
+  return(    
+   <div className="go-wrapper">
+
+      {! isRedeem ? 
+
+      <>        
+      <div className="about-wrapper">
+         {props.message}
+      </div>
+      <button className="but"
+        style={{cursor: 'pointer'}}
+        onMouseEnter={() => setGo(false)}
+        onMouseLeave={() => setGo(true)}
+        onClick={() => redeem(setRedeem, setKey)}
+      > {isGo ? (props.prompt) : 'x'}</button>
+      </> :        
+      <ul className="grid" >
+        <li className="spectrum-item-static" style={{height: '120px'}}>
+            <>
+              0xE04.. owned
+              <img src={"https://i.pinimg.com/originals/56/3d/81/563d81a451d0f08a6da9be76a5604a28.gif"} alt="~" className="thumbnail-spectrum"/>
+            </>
+
+        <CopyToClipboard text={key}
+          onCopy={() => setCopied(true)}>
+          <div>{key.substring(0,3) + "..."}</div>
+        </CopyToClipboard>
+        </li>
+        <br/>
+      </ul>
+    }
+    </div>)
+}
+
 function BioInspect(props){
   console.log(props.snap)
   const snap = useProxy(state)
   console.log(props.snap !== undefined)
 
-  return(<div className="builder-pool">{snap !== undefined ? matter[snap.active].name : ''}</div>)
+  return(
+    <>
+    <div className="builder-pool">{snap !== undefined ? matter[snap.active].name : ''}
+    </div>
+    {
+        state.active != 3 ? 
+        <DualPrompt message={"what pool would you like to build for?"} prompt1={"inspect"} prompt2={"register"} nextPath={'/register'}/>
+        :<Prompt message={"available for redemption"} prompt={"redeem"} onClick={redeem} nextPath={'/redeem'}/>
+      }
+    </>
+
+    )
 }
 
 export default function Builder() {
+
+  // const [state, setState] = useContext(GlobalState);
+
+  // useEffect(() => {
+    
+  // }, []);
+
   const snap = useProxy(state)
+
+  const [bought, isBought] = useState(false)
+
+  console.log(state)
+  console.log(snap)
+  console.log(bought)
+
   return (
     <div className="builder">
       <Header title={"build"} />
@@ -226,7 +308,6 @@ export default function Builder() {
         </main>
       </div>
       <BioInspect state={snap}/>
-      <DualPrompt message={"what pool would you like to build for?"} prompt1={"inspect"} prompt2={"register"} nextPath={'/register'}/>
     </div>
   )
 }

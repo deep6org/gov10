@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: agpl-3.0
-pragma solidity 0.7.3;
+pragma solidity ^0.6.0;
 
 import { IERC20, IERC721, ILendingPool, IProtocolDataProvider, IStableDebtToken } from './Interfaces.sol';
 import { SafeERC20 } from './Libraries.sol';
@@ -16,6 +16,7 @@ import './OracleClient.sol';
  
 contract CreditExecutor is OracleClient {
     using SafeERC20 for IERC20;
+    using SafeMath for uint256;
     
     ILendingPool constant lendingPool = ILendingPool(address(0xE0fBa4Fc209b4948668006B2bE61711b7f465bAe)); // Kovan
     IProtocolDataProvider constant dataProvider = IProtocolDataProvider(address(0x3c73A5E5785cAC854D468F727c606C07488a29D6)); // Kovan
@@ -27,7 +28,7 @@ contract CreditExecutor is OracleClient {
     OracleClient public oracleClient;
 
     mapping(address => address) public agreements;
-    mapping(address => uint256) public aBalances;
+    mapping(uint256 => uint256) public tokenIdPrices;
 
     constructor (address nftFactoryAddress, address oracleClientAddress) public {
         owner = msg.sender;
@@ -38,17 +39,12 @@ contract CreditExecutor is OracleClient {
     }
 
     /** 
-        * @dev This calls an estimate for the market
-    */
-    function quote() public returns(uint256 value) {
-        return oracleClient.getMultiplierEstimate();
-    }
-
-    /** 
         * @dev for testing
     */
     function dummyDeposit(uint depositAmount, string memory _dataKey) public view returns(uint staked) {
-        return oracleClient.getMultiplierEstimate(_dataKey) * capAttenRate * depositAmount;
+        uint window = 30;
+
+        return oracleClient.getMultiplier(_dataKey) * capAttenRate * depositAmount;
     }
 
     /**
@@ -88,7 +84,7 @@ contract CreditExecutor is OracleClient {
      * 
      * Add permissions to this call, e.g. only the owner should be able to approve borrowers!
      */
-    function approveBorrower(address borrower, uint256 amount, address asset, uint weeksAfter, bytes memory data) public {
+    function approveBorrower(address borrower, uint256 amount, address asset, uint weeksAfter, bytes memory data, string memory tokenUri) public {
         (, address stableDebtTokenAddress,) = dataProvider.getReserveTokensAddresses(asset);
 
         // take in an array of borrower(s), maybe v1 just be about a single borrower
@@ -98,13 +94,16 @@ contract CreditExecutor is OracleClient {
 
         // get price 
         
-        // uint price = oracleClient.getPrice()
+        uint nftPrice = amount.div(capAttenRate);
 
         // prepare 1 nft token to delegator on gov10 (land + bio)
         // mint bio token as confidence
         // nftFactory.issue(msg.sender)
 
-        nftFactory.issueNFTCommitment(msg.sender, price, weeksAfter, data)
+        // function issueNFTCommitment(address owner, address _buyer, uint depositAmount, uint weeksAfter, bytes memory dataHash, string memory tokenUri) public {
+
+        uint tokenId = nftFactory.issueNFTCommitment(msg.sender, borrower, nftPrice, weeksAfter, data, tokenUri);
+        tokenIdPrices[tokenId] = nftPrice;
 
         // IERC20(asset).approve(address(this), amount * cap);
 
@@ -146,20 +145,15 @@ contract CreditExecutor is OracleClient {
      */
     function repayBorrowerWithNFT(uint256 amount, address asset, uint256 tokenId) public {
 
-        // redeem will call transfer NFT
-        uint price = 0;
-        // uint price = nftFactory.reveal(tokenId);
-
-
-        IERC20(asset).safeTransferFrom(msg.sender, address(this), amount + price);
-        // IERC20(asset).safeApprove(address(lendingPool), amount + price);
-
+        // get token by id
+        IERC20(asset).safeApprove(address(this), tokenIdPrices[tokenId]);
+        IERC20(asset).safeTransferFrom(msg.sender, address(this), tokenIdPrices[tokenId]);
 
         // swap nft to this contract
         // get price of the nft from the oracleClient
         // subtract price of nft from the internal account
 
-        lendingPool.repay(asset, amount + price, 1, address(this));
+        // lendingPool.repay(asset, amount + price, 1, address(this));
     }
 
     // function repayBorrowerWithBio() public {

@@ -1,4 +1,7 @@
 require("@nomiclabs/hardhat-waffle");
+require("@nomiclabs/hardhat-web3");
+require("@nomiclabs/hardhat-truffle5");
+
 require('dotenv').config();
 
 // This is a sample Hardhat task. To learn how to create your own go to
@@ -31,7 +34,7 @@ const KOVAN_PRIVATE_KEY = process.env.KOVAN_PRIVATE_KEY || '';
 const KOVAN_PRIVATE_KEY_B = process.env.KOVAN_PRIVATE_KEY_B || '';
 
 module.exports = {
-  solidity: "0.7.3",
+  solidity: "0.6.2",
   networks: {
     kovan: {
       url: `${ALCHEMY_URL}`,
