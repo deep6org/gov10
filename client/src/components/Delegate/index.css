@@ -5,6 +5,11 @@
   	cursor: crosshair;
 }
 
+.pool-key {
+  width: 570px;
+  margin-bottom: 10px;
+}
+
 .lean-agreement {
 	background: aliceblue;
     height: 30px;

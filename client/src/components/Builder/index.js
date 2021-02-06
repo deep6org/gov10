@@ -204,7 +204,7 @@ function Prompt(props){
       > {isGo ? (props.prompt) : 'x'}</button>
       </> :        
       <ul className="grid" >
-        <li className="spectrum-item-static" style={{height: '120px'}}>
+        <li className="spectrum-item-static" style={{height: '100px'}}>
             <>
               0xE04.. owned
               <img src={"https://i.pinimg.com/originals/56/3d/81/563d81a451d0f08a6da9be76a5604a28.gif"} alt="~" className="thumbnail-spectrum"/>
@@ -212,7 +212,7 @@ function Prompt(props){
 
         <CopyToClipboard text={key}
           onCopy={() => setCopied(true)}>
-          <div>{key.substring(0,3) + "..."}</div>
+          <div>{key.substring(0,3) + "... swarm key"}</div>
         </CopyToClipboard>
         </li>
         <br/>

@@ -80,40 +80,56 @@ const factions = {
 }
 
 const LightButton = (props) => {
-	return(<button type="button" className="but" style={{background: "#3c3b3b"}} onClick={props.onClick}>{props.name}</button>)
+	return(<button type="button" className="but" style={{background: "#3c3b3b"}} onClick={() => props.setLight(!props.light)}>{props.name}</button>)
 }
 
 const DarkButton = (props) => {
-	return(<button type="button" className="but" onClick={props.onClick}>{props.name}</button>)
+	return(<button type="button" className="but" onClick={() => props.setLight(!props.light)}>{props.name}</button>)
 }
 
 const RevealButton = (props) => {
-	return(<button type="button" className="but" style={{width: '200px' }}onClick={props.onClick}>{props.name}</button>)
+	return(<button type="button" disabled={props.disabled} className="but" style={{width: '200px' }} onClick={() => props.onClick(props.setPrice)}> {props.name}</button>)
 }
 
-class Participate extends React.Component {
+const revealClick = (setprice) => {
+	// get contract value data key
+	// perform ecr recover on signed message
+	// add data key to the contract in a tx
+	console.log('reveal')
+	setprice(100)
+}
 
-	state = {
-		light: true
-	}
+const placements = {
+  0:"https://globalnews.ca/wp-content/uploads/2019/12/orbit-pic-3-1024x576.jpg?quality=85&strip=all",
+  1:"https://globalnews.ca/wp-content/uploads/2019/12/orbit-pic-3-1024x576.jpg?quality=85&strip=all",
+  2:"https://i.pinimg.com/564x/ed/09/47/ed09478d4cb05ef11e9050b013744a90.jpg",
+  3:"https://i.pinimg.com/564x/9a/c2/b1/9ac2b14e9cf1f8f69211a77b003a650e.jpg",
+  4:"",
+  5:"",
+  6:"",
+  7:"",
+  8:"",
+  9:""
+}
 
-	componentDidMount(){
+const Participate = (props) => {
 
-	}
+	const [light, setLight] = useState(true)
+	const [price, setPrice] = useState(0)
+	const [loanHealth, setLoanHealth] = useState(102)
 
-	switch = () => {
-		this.setState({
-			light: !this.state.light
-		})
-	}
+	// switch = () => {
+	// 	this.setState({
+	// 		light: !this.state.light
+	// 	})
+	// }
 
-	render(){
 		return(
 			<React.Fragment>
 				<Header title={"ritual"} />
 
 				{
-					this.state.light 
+					light 
 						?
 					(<div className="light-matter-container">
 						<LightSpirit />
@@ -125,22 +141,24 @@ class Participate extends React.Component {
 				}
 				<div className="button-wrapper">
 				{
-					this.state.light 
+					light 
 						?
-					(<LightButton onClick={this.switch}/>)
+					(<LightButton setLight={setLight} light={light}/>)
 					:
-					(<DarkButton onClick={this.switch}/>)
+					(<DarkButton setLight={setLight} light={light}/>)
 				}
 				<br />
 				<br />
 				<br />
 				<div className="reveal-wrapper">
-					<RevealButton name={'swarm reveal'}/>
+					<RevealButton disabled={price != 0} name={price == 0 ? 'swarm reveal' : 'swarming'} onClick={revealClick} setPrice={setPrice}/>
 					<br/>
 					<br/>
 					<br/>
 					<div>
-						loan health: 102%
+						loan health: {loanHealth}%
+						<br/>
+						price: {price} dai
 					</div>
 					<div className="grid">
 							<li className="land-item">
@@ -171,6 +189,7 @@ class Participate extends React.Component {
 						</div>
 						<li className="land-item">
 					      		{'gov10:land'}
+					      		{<img src={placements[0]} className="thumb-nail"/> }
 					        </li>
 					</div>
 					<br/>
@@ -179,7 +198,6 @@ class Participate extends React.Component {
 				</div>
 			</React.Fragment>
 			)
-	}
 }
 
 export default Participate;
