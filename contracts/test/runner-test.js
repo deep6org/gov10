@@ -1604,10 +1604,10 @@ const lendingPoolAbi = [
 const daiFaucetAddress = "0x7CFAb6430acF23F6a45521144bc83Ad5C8c2E2aa";
 
 let daiContractAddress = "0xFf795577d9AC8bD7D90Ee22b6C1703490b6512FD";
-const aDaiContractAddress = "0x6ddfd6364110e9580292d9ecc745f75dea7e72c8";
+let aDaiContractAddress = "0xdcf0af9e59c002fa3aa091a46196b37530fd48a8";
 
-const creditExecutorAddress = "0xE5Bbf3E53b4855629fD72A9Fb4B9e35744a6a82c";
-const LENDING_POOL_ADDRESS = "0x9FE532197ad76c5a68961439604C037EB79681F0";
+const creditExecutorAddress = "0xb9eC9bF8A4edFFa5994EDE5DFCC1e4e8a32850df";
+const LENDING_POOL_ADDRESS = "0xE0fBa4Fc209b4948668006B2bE61711b7f465bAe";
 
 describe("DAIFaucet", function() {
 
@@ -1616,12 +1616,19 @@ describe("DAIFaucet", function() {
       const lendingDataProviderAddress = "0x744C1aaA95232EeF8A9994C4E0b3a89659D9AB79"
       let dataProviderContract = new ethers.Contract(lendingDataProviderAddress, lendingDataProviderAbi, ethers.provider);
 
+
       let _reserveTokens = await dataProviderContract.getAllReservesTokens()
       //.getReserveData("0x6B175474E89094C44Da98b954EedeAC495271d0F")
       //makeCall('getAddress', addressProviderContract, ["0x1"])
-      _reserveTokens.forEach((pool) => {
+      _reserveTokens.forEach( async (pool) => {
         if(pool.symbol == 'DAI'){
           daiContractAddress = pool.tokenAddress
+
+          let aToken = await dataProviderContract.getReserveTokensAddresses(daiContractAddress)
+          console.log(aToken)
+          aDaiContractAddress = aToken.aTokenAddress
+
+          console.log(`gettign the aToken contract to: ${aDaiContractAddress}`)
           console.log(`setting the dai contract to: ${daiContractAddress}`)
         }
       })
@@ -1657,23 +1664,23 @@ describe("DAIFaucet", function() {
 
   });
 
-  it('sets greeting deposit', async() => {
-    const contract = await ethers.getContractAt("CreditExecutor", creditExecutorAddress);
-    console.log(contract)
+  // it('sets greeting deposit', async() => {
+  //   const contract = await ethers.getContractAt("CreditExecutor", creditExecutorAddress);
+  //   console.log(contract)
 
-    // let contract = new ethers.Contract(contractAddress, abi, ethers.provider);
-    const res = await contract.setGreeting("howdie")
-    console.log(res)
+  //   // let contract = new ethers.Contract(contractAddress, abi, ethers.provider);
+  //   const res = await contract.setGreeting("howdie")
+  //   console.log(res)
 
-  })
+  // })
 
-  it('sets greeting deposit', async() => {
-    const contract = await ethers.getContractAt("CreditExecutor", creditExecutorAddress);
+  // it('sets greeting deposit', async() => {
+  //   const contract = await ethers.getContractAt("CreditExecutor", creditExecutorAddress);
 
-    const res2 = await contract.getGreeting()
-    console.log(res2)
+  //   const res2 = await contract.getGreeting()
+  //   console.log(res2)
 
-  })
+  // })
 
   it('gets all possible reserve data from the protocol', async () => {
       const lendingDataProviderAddress = "0x744C1aaA95232EeF8A9994C4E0b3a89659D9AB79"
@@ -1694,7 +1701,8 @@ describe("DAIFaucet", function() {
       expect(_reserveTokens.length > 0)
   })
 
-  it('gets the account informatio', async () => {
+  it('gets the account information', async () => {
+  // it.only('gets the account information', async () => {
 
     const [owner] = await ethers.getSigners();
 
@@ -1705,7 +1713,8 @@ describe("DAIFaucet", function() {
     // have read-only access to the Contract
     // let contract = new ethers.Contract(daiContractAddress, abi, ethers.provider);
     // const balance = await contract.balanceOf(owner.address)
-    console.log(_accountData)
+    console.log("ACCOUNT_DATA")
+    // console.log(_accountData)
   })
 
   // it('gets DAI balance', async () => {
@@ -1721,11 +1730,12 @@ describe("DAIFaucet", function() {
 
   })
 
-  it('sets amount of approval into the pool', async() => {
+  // #1
+  it('sets amount of approval into the pool as owner', async() => {
   // it.only('sets amount of approval into the pool', async() => {
 
     const [owner] = await ethers.getSigners();
-    let amount = 20;
+    let amount = 10;
     let amountToDeposit = parseUnits(amount.toString(), 18)
     let amountToApprove = amountToDeposit;
 
@@ -1741,6 +1751,28 @@ describe("DAIFaucet", function() {
 
   })
 
+  // #2
+  it('sets amount of approval into the pool as borrower', async() => {
+  // it.only('sets amount of approval into the pool as borrower', async() => {
+
+    const [owner, borrower] = await ethers.getSigners();
+    let amount = 10;
+    let amountToDeposit = parseUnits(amount.toString(), 18)
+    let amountToApprove = amountToDeposit;
+
+    console.log('deposit', amountToDeposit.toString())
+    let daiContract = new ethers.Contract(daiContractAddress, erc20Abi, borrower);
+    let res = await daiContract.approve(creditExecutorAddress, amountToApprove)
+    console.log(res)
+    console.log('approval')
+        // perform test to see allowance
+    let allowance = await daiContract.allowance(borrower.address, creditExecutorAddress)
+    console.log("allowance")
+    console.log(allowance.toString())
+
+  })
+
+  // #3
   it('depositCollateral in the pool', async () => {
   // it.only('depositCollateral in the pool', async () => {
     const [owner] = await ethers.getSigners();
@@ -1753,36 +1785,50 @@ describe("DAIFaucet", function() {
     const res = await creditExecutor.depositCollateral(daiContractAddress, amountToDeposit, true)
     console.log(res)
   })
-  
-  it('adds the asset as collateral', async () => {
-  // it.only('gives the borrower power', async () => {
-    const [owner, borrower] = await ethers.getSigners();
 
-    console.log(`Owner: ${owner}`)
-    console.log(`Borrower: ${borrower}`)
-
+  // #3a
+  // it('depositCollateral in the pool', async () => {
+  it.only('depositCollateral in the pool with a multiplier', async () => {
+    const [owner] = await ethers.getSigners();
     let amount = 10;
-    let amountToBorrow = parseUnits(amount.toString(), 18)
-    console.log('deposit', amountToBorrow.toString())
+    let amountToDeposit = parseUnits(amount.toString(), 18)
+    console.log('deposit', amountToDeposit.toString())
 
+    const creditExecutor = await ethers.getContractAt("CreditExecutor", creditExecutorAddress);
+    // deposit
+    const res = await creditExecutor.dummyDeposit( amountToDeposit )
+    console.log(parseUnits(res.toString(), 'ether').toString())
+    console.log(parseUnits(res.toString()).toString())
+    console.log(parseUnits(res.toString(), 18).toString())
+  })
+  
+  // #4
+  it('adds the asset as collateral', async () => {
+  // it.only('adds the asset as collateral', async () => {
+    const [owner, borrower] = await ethers.getSigners();
     const creditExecutor = await ethers.getContractAt("CreditExecutor", creditExecutorAddress);
     const res = await creditExecutor.setUserUseReserveAsCollateral(daiContractAddress)
     console.log(res)
   })
 
+  // #5
    it('gives the borrower power', async () => {
   // it.only('gives the borrower power', async () => {
     const [owner, borrower] = await ethers.getSigners();
 
-    console.log(`Owner: ${owner}`)
-    console.log(`Borrower: ${borrower}`)
+    console.log(`Owner: ${owner.address}`)
+    console.log(`Borrower: ${borrower.address}`)
 
     let amount = 10;
+    let weeksAfter = 52;
+    let data = ethers.utils.arrayify("0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef");
+    console.log('DATA')
+    console.log(data)
     let amountToBorrow = parseUnits(amount.toString(), 18)
     console.log('deposit', amountToBorrow.toString())
 
     const creditExecutor = await ethers.getContractAt("CreditExecutor", creditExecutorAddress);
-    const res = await creditExecutor.approveBorrower(borrower.address, amountToBorrow, daiContractAddress)
+    const res = await creditExecutor.approveBorrower(borrower.address, amountToBorrow, daiContractAddress, weeksAfter, data)
     console.log(res)
   })
 
@@ -1798,6 +1844,7 @@ describe("DAIFaucet", function() {
     console.log(balance.toString())
   })
 
+  // #6
   it('borrows the collateral', async() => {
   // it.only('borrows the collateral', async() => {
     const [owner, borrower] = await ethers.getSigners();
@@ -1842,31 +1889,31 @@ describe("DAIFaucet", function() {
     console.log(res)
   });
 
-  it('allows a borrower to repays debt', async() => {
-  // it.only('allows a borrower to repay debt', async() => {
-    const [owner, borrower] = await ethers.getSigners();
+  // it('allows a borrower to repays debt', async() => {
+  // // it.only('allows a borrower to repay debt', async() => {
+  //   const [owner, borrower] = await ethers.getSigners();
 
-    let amount = 5;
-    let amountToApprove = parseUnits(amount.toString(), 18);
+  //   let amount = 5;
+  //   let amountToApprove = parseUnits(amount.toString(), 18);
 
-    let daiContract = new ethers.Contract(daiContractAddress, erc20Abi, borrower);
-    let res = await daiContract.approve(creditExecutorAddress, amountToApprove)
-    console.log(res)
+  //   let daiContract = new ethers.Contract(daiContractAddress, erc20Abi, borrower);
+  //   let res = await daiContract.approve(creditExecutorAddress, amountToApprove)
+  //   console.log(res)
 
-    let lendingPoolContract = new ethers.Contract(LENDING_POOL_ADDRESS, lendingPoolAbi, borrower);
+  //   let lendingPoolContract = new ethers.Contract(LENDING_POOL_ADDRESS, lendingPoolAbi, borrower);
 
-    let res = await lendingPoolContract.approveBorrower(
-                                                assetToBorrow,
-                                                amountToBorrowInWei,
-                                                interestRateMode,
-                                                referralCode,
-                                                creditExecutorAddress
-                                              )
+  //   // let res = await lendingPoolContract.approveBorrower(
+  //   //                                             assetToBorrow,
+  //   //                                             amountToBorrowInWei,
+  //   //                                             interestRateMode,
+  //   //                                             referralCode,
+  //   //                                             creditExecutorAddress
+  //   //                                           )
+  //   // console.log(res2)
 
 
 
-
-  })
+  // })
 
     // it('allowance of a borrower', async() => {
   it.only('allowance of a borrower', async() => {
@@ -1881,46 +1928,65 @@ describe("DAIFaucet", function() {
   })
 
   // it('a borrower repays collateral', async() => {
-  it.only('a borrower repays loan with js', async() => {
+  // // it.only('a borrower repays loan with js', async() => {
 
+  //   const [owner, borrower] = await ethers.getSigners();
+
+  //   console.log(`Owner: ${owner.address}`)
+  //   console.log(`Borrower: ${borrower.address}`)
+
+  //   let amount = 5;
+  //   let assetToRepay = daiContractAddress;
+  //   console.log(`dai_contract: ${assetToRepay}`)
+  //   let amountToRepay = parseUnits(amount.toString(), 18)
+  //   console.log('borrow repayment', amountToRepay.toString())
+
+  //   const creditExecutor = await ethers.getContractAt("CreditExecutor", creditExecutorAddress, borrower);
+
+  //   // let lendingPoolContract = new ethers.Contract(LENDING_POOL_ADDRESS, lendingPoolAbi, borrower);
+
+  //   // TODO: added repauy with javscript version
+  //   // let res = await lendingPoolContract.borrow(
+  //   //                                             assetToBorrow,
+  //   //                                             amountToBorrowInWei,
+  //   //                                             interestRateMode,
+  //   //                                             referralCode,
+  //   //                                             creditExecutorAddress
+  //   //                                           )
+
+  //   let res = await creditExecutor.repayBorrower(
+  //                             amountToRepay,
+  //                             assetToRepay
+  //                         )
+
+  //   console.log(res)
+  // })
+
+
+  it(`withdraws the collateral balance`, async () => {
+  // it.only(`withdraws the collateral balance, should fail`, async () => {
     const [owner, borrower] = await ethers.getSigners();
 
-    console.log(`Owner: ${owner.address}`)
-    console.log(`Borrower: ${borrower.address}`)
+    const creditExecutor = await ethers.getContractAt("CreditExecutor", creditExecutorAddress, owner);
 
-    let amount = 5;
-    let assetToRepay = daiContractAddress;
-    console.log(`dai_contract: ${assetToRepay}`)
-    let amountToRepay = parseUnits(amount.toString(), 18)
-    console.log('borrow repayment', amountToRepay.toString())
+    const assetToWithdraw = daiContractAddress;
 
-    const creditExecutor = await ethers.getContractAt("CreditExecutor", creditExecutorAddress, borrower);
+    let res = await creditExecutor.withdrawCollateral(
+                              assetToWithdraw,
 
-    let lendingPoolContract = new ethers.Contract(LENDING_POOL_ADDRESS, lendingPoolAbi, borrower);
-
-    let res = await lendingPoolContract.borrow(
-                                                assetToBorrow,
-                                                amountToBorrowInWei,
-                                                interestRateMode,
-                                                referralCode,
-                                                creditExecutorAddress
-                                              )
-
-    let res = await creditExecutor.repayBorrower(
-                              amountToRepay,
-                              assetToRepay
                           )
 
     console.log(res)
   })
 
   it('a borrower repays loan', async() => {
+  // it.only('a borrower repays loan', async() => {
     const [owner, borrower] = await ethers.getSigners();
 
     console.log(`Owner: ${owner.address}`)
     console.log(`Borrower: ${borrower.address}`)
 
-    let amount = 5;
+    let amount = 2;
     let assetToRepay = daiContractAddress;
     console.log(`dai_contract: ${assetToRepay}`)
     let amountToRepay = parseUnits(amount.toString(), 18)
@@ -1967,13 +2033,141 @@ describe("DAIFaucet", function() {
 
     let aContract = new ethers.Contract(aDaiContractAddress, erc20Abi, ethers.provider);
     balance = await aContract.balanceOf(creditExecutorAddress)
-    console.log(`creditExecutorAddress of ${owner.address} aBalance: ${balance.toString()}`)
+    console.log(`creditExecutorAddress of ${creditExecutorAddress} aBalance: ${balance.toString()}`)
 
+    balance = await aContract.balanceOf(owner.address)
+    console.log(`owner.address of ${owner.address} aBalance: ${balance.toString()}`)
+
+  })
+
+  // call this if you've lost track of accounting, and want to reset funds to
+  // this happens because of the various pool positions
+  it(`clears dai balance from borrower`, async () => {
+  // it.only(`clears dai balance from borrower`, async () => {
+    const [owner, borrower] = await ethers.getSigners();
+
+    let contract = new ethers.Contract(daiContractAddress, erc20Abi, borrower);
+
+    let amount = 5;
+    let assetToRepay = daiContractAddress;
+    console.log(`dai_contract: ${assetToRepay}`)
+    let amountToTransfer = parseUnits(amount.toString(), 18)
+
+    let res = await contract.transfer(owner.address, amountToTransfer)
+    console.log(res)
+  })
+
+  it(`allows atoken to be swapped for withdrawal`, async () => {
+  // it.only(`allows atoken to be swapped for withdrawl`, async () => {
+    const [owner, borrower] = await ethers.getSigners();
+
+    let aContract = new ethers.Contract(aDaiContractAddress, erc20Abi, owner);
+
+    let amount = 2;
+    let amountToApprove = parseUnits(amount.toString(), 18)
+
+    let res = await aContract.approve(creditExecutorAddress, amountToApprove)
+
+    console.log(res)
+
+    // let allowance = await aContract.allowance(borrower.address, creditExecutorAddress)
+    // console.log("allowance of borrower")
+    // console.log(allowance.toString())
+  })
+    // it(`withdraws the collateral balance`, async () => {
+  it(`gets allowance for atoken`, async () => {
+  // it.only(`gets allowance for atoken`, async () => {
+    const [owner, borrower] = await ethers.getSigners();
+
+    let aContract = new ethers.Contract(aDaiContractAddress, erc20Abi, owner);
+
+    let allowance = await aContract.allowance(owner.address, creditExecutorAddress)
+    console.log("atoken allowance of owner")
+    console.log(allowance.toString())
   })
 
   it(`withdraws the collateral balance`, async () => {
+  // it.only(`withdraws the collateral balance to contract`, async () => {
+    const [owner, borrower] = await ethers.getSigners();
+
+    const creditExecutor = await ethers.getContractAt("CreditExecutor", creditExecutorAddress, owner);
+
+    let amount = 2;
+    let amountToWithdraw = parseUnits(amount.toString(), 18)
+
+    const assetToWithdraw = daiContractAddress;
+
+    let res = await creditExecutor.withdrawCollateral(
+                              assetToWithdraw,
+                              amountToWithdraw
+                          )
+
+    console.log(res)
+  })
+
+  it.only(`gets the healthFactor`, async () => {
+    const [owner, borrower] = await ethers.getSigners();
+
+
+    const lendingDataProviderAddress = "0x744C1aaA95232EeF8A9994C4E0b3a89659D9AB79"
+    let lendingPoolContract = new ethers.Contract(LENDING_POOL_ADDRESS, lendingPoolAbi, ethers.provider);
+
+    let accountData = await lendingPoolContract.getUserAccountData(owner.address)
+    console.log(accountData)
+    console.log(accountData.healthFactor.toString())
+    console.log(formatUnits(accountData.healthFactor))
+    // //.getReserveData("0x6B175474E89094C44Da98b954EedeAC495271d0F")
+    // //makeCall('getAddress', addressProviderContract, ["0x1"])
+    // _reserveTokens.forEach( async (pool) => {
+    //   if(pool.symbol == 'DAI'){
+    //     daiContractAddress = pool.tokenAddress
+
+    //     let aToken = await dataProviderContract.getReserveTokensAddresses(daiContractAddress)
+    //     console.log(aToken)
+    //     aDaiContractAddress = aToken.aTokenAddress
+
+    //     console.log(`gettign the aToken contract to: ${aDaiContractAddress}`)
+    //     console.log(`setting the dai contract to: ${daiContractAddress}`)
+    //   }
+    // })
 
   })
+
+  it(`withdraws the balance to owner`, async () => {
+  // it.only(`withdraws the balance to owner`, async () => {
+    const [owner, borrower] = await ethers.getSigners();
+
+    const creditExecutor = await ethers.getContractAt("CreditExecutor", creditExecutorAddress, owner);
+
+    let amount = 2;
+    let amountToWithdraw = parseUnits(amount.toString(), 18)
+
+    const assetToWithdraw = daiContractAddress;
+
+    let res = await creditExecutor.rugPull(
+                              assetToWithdraw
+                          )
+
+    console.log(res)
+  })
+
+  // it(`withdraws from the contract balance`, async () => {
+  // // it.only(`withdraws from the contract balance`, async () => {
+  //   const [owner, borrower] = await ethers.getSigners();
+
+  //   const creditExecutor = await ethers.getContractAt("CreditExecutor", creditExecutorAddress, owner);
+
+  //   let amount = 10;
+  //   let amountToWithdraw = parseUnits(amount.toString(), 18)
+
+  //   const assetToWithdraw = aDaiContractAddress;
+
+  //   let res = await creditExecutor.withdrawCollateral(
+  //                             assetToWithdraw
+  //                         )
+
+  //   console.log(res)
+  // })
 
 
   // check allowance

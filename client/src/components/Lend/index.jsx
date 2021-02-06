@@ -136,6 +136,11 @@ function DebtList(props){
       try {
           const response = await axios.get("http://localhost:3001/list");
           console.log(response.data);
+
+          if(response.data.length == 0) {
+            setfetched(true)
+          }
+
           response.data.forEach((debt) => {
             // debts.push(debt)
             console.log(debt)

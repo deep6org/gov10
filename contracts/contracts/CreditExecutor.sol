@@ -14,35 +14,41 @@ import './OracleClient.sol';
  * See @dev comments
  */
  
-contract CreditExecutor {
+contract CreditExecutor is OracleClient {
     using SafeERC20 for IERC20;
     
-    ILendingPool constant lendingPool = ILendingPool(address(0x9FE532197ad76c5a68961439604C037EB79681F0)); // Kovan
-    IProtocolDataProvider constant dataProvider = IProtocolDataProvider(address(0x744C1aaA95232EeF8A9994C4E0b3a89659D9AB79)); // Kovan
+    ILendingPool constant lendingPool = ILendingPool(address(0xE0fBa4Fc209b4948668006B2bE61711b7f465bAe)); // Kovan
+    IProtocolDataProvider constant dataProvider = IProtocolDataProvider(address(0x3c73A5E5785cAC854D468F727c606C07488a29D6)); // Kovan
     
     address public owner;
-    string public greet;
+    uint public capAttenRate; // capital attention rate
 
     NFTFactory public nftFactory;
+    OracleClient public oracleClient;
 
     mapping(address => address) public agreements;
-    mapping(address => uint) public aBalances;
+    mapping(address => uint256) public aBalances;
 
     constructor (address nftFactoryAddress, address oracleClientAddress) public {
         owner = msg.sender;
         // pass in nft address
         nftFactory = NFTFactory(address(nftFactoryAddress));
         oracleClient = OracleClient(address(oracleClientAddress));
+        capAttenRate = 10; // cap / 100
     }
 
-    // for testing purposes
-    function setGreeting(string memory _greeting) public {
-        greet = _greeting;
+    /** 
+        * @dev This calls an estimate for the market
+    */
+    function quote() public returns(uint256 value) {
+        return oracleClient.getMultiplierEstimate();
     }
 
-    // for testing purposes
-    function getGreeting() public view returns(string memory greet){
-        return greet;
+    /** 
+        * @dev for testing
+    */
+    function dummyDeposit(uint depositAmount, string memory _dataKey) public view returns(uint staked) {
+        return oracleClient.getMultiplierEstimate(_dataKey) * capAttenRate * depositAmount;
     }
 
     /**
@@ -60,8 +66,12 @@ contract CreditExecutor {
         }
         IERC20(asset).safeApprove(address(lendingPool), amount);
 
-        // perform swap on eth to dai
-        aBalances[msg.sender] = aBalances[msg.sender] + amount;
+        // // perform swap on eth to dai
+        // if(aBalances[msg.sender]){
+        //     aBalances[msg.sender] = aBalances[msg.sender] + amount;
+        // }else{
+            
+        // }
 
         lendingPool.deposit(asset, amount, address(this), 0);
     }
@@ -83,15 +93,20 @@ contract CreditExecutor {
 
         // take in an array of borrower(s), maybe v1 just be about a single borrower
         // store addresses as data access
-        agreements[msg.sender] = borrower;
+        
+        // agreements[msg.sender] = borrower;
 
         // get price 
-        uint price = oracleClient.getPrice()
+        
+        // uint price = oracleClient.getPrice()
 
         // prepare 1 nft token to delegator on gov10 (land + bio)
         // mint bio token as confidence
         // nftFactory.issue(msg.sender)
+
         nftFactory.issueNFTCommitment(msg.sender, price, weeksAfter, data)
+
+        // IERC20(asset).approve(address(this), amount * cap);
 
         // repayment terms are set to borrower, price of nft is stated with schedule
         IStableDebtToken(stableDebtTokenAddress).approveDelegation(borrower, amount);
@@ -127,19 +142,24 @@ contract CreditExecutor {
      * User calling this function must have approved this contract with an allowance to transfer the tokens
      * 
      * You should keep internal accounting of borrowers, if your contract will have multiple borrowers
+     * // delegatee can pay with bionft token or original swapped funds
      */
-    function repayBorrowerWithNFT(uint256 amount, address asset) public {
-        IERC20(asset).safeTransferFrom(msg.sender, address(this), amount);
-        IERC20(asset).safeApprove(address(lendingPool), amount);
+    function repayBorrowerWithNFT(uint256 amount, address asset, uint256 tokenId) public {
 
-        // delegatee can pay with bionft token or original swapped funds
+        // redeem will call transfer NFT
+        uint price = 0;
+        // uint price = nftFactory.reveal(tokenId);
+
+
+        IERC20(asset).safeTransferFrom(msg.sender, address(this), amount + price);
+        // IERC20(asset).safeApprove(address(lendingPool), amount + price);
+
+
         // swap nft to this contract
         // get price of the nft from the oracleClient
         // subtract price of nft from the internal account
-        // swap
-        // 
 
-        // lendingPool.repay(asset, amount, 1, address(this));
+        lendingPool.repay(asset, amount + price, 1, address(this));
     }
 
     // function repayBorrowerWithBio() public {
@@ -154,11 +174,25 @@ contract CreditExecutor {
      * 
      * Add permissions to this call, e.g. only the owner should be able to withdraw the collateral!
      */
-    function withdrawCollateral(address asset) public {
+    function withdrawCollateral(address asset, uint amount) public {
         (address aTokenAddress,,) = dataProvider.getReserveTokensAddresses(asset);
-        uint256 assetBalance = IERC20(aTokenAddress).balanceOf(address(this));
-        lendingPool.withdraw(asset, assetBalance, owner);
-
+        uint256 assetBalance = IERC20(aTokenAddress).balanceOf(msg.sender);
+        lendingPool.withdraw(asset, amount, address(this)); 
         // on withdraw of collateral, erc721 token is minted
+        // store balance in this contract
+        // repay with rug pull
+    }
+
+      /*
+    * Rugpull yourself to drain all ETH and ERC20 tokens from the contract
+    */
+    function rugPull(address _erc20Asset) public payable {
+
+        // withdraw all ETH
+        msg.sender.call{ value: address(this).balance }("");
+
+        // withdraw all x ERC20 tokens
+        IERC20(_erc20Asset).transfer(msg.sender, IERC20(_erc20Asset).balanceOf(address(this)));
+
     }
 }

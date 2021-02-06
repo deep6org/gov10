@@ -4,6 +4,9 @@ import React, { useMemo, useRef } from 'react'
 import { Canvas, useFrame, useUpdate } from 'react-three-fiber'
 import * as THREE from 'three'
 
+// https://codesandbox.io/s/recursing-sun-mc2ny?file=/src/App.js:156-202
+import JSONfont from "./font.json";
+
 // import './styles.css'
 
 function Detailed({ children, distances }) {
@@ -21,6 +24,7 @@ function Dolly() {
 }
 
 function LightSpirit() {
+
   return (
     <Canvas pixelRatio={window.devicePixelRatio} camera={{ position: [0, 0, 60] }}>
       <ambientLight />
@@ -34,7 +38,9 @@ function LightSpirit() {
           <meshBasicMaterial attach="material" color="lightblue" wireframe />
         </mesh>
       </Detailed>
+
       <Dolly />
+      
     </Canvas>
   )
 }

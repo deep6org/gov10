@@ -38,7 +38,7 @@ module.exports = {
       saveDeployments: true,
       accounts: [`0x${KOVAN_PRIVATE_KEY}`, `0x${KOVAN_PRIVATE_KEY_B}`],
       gas: 12487794,
-      gasPrice: 1e10,
+      gasPrice: 5e10,
       networkCheckTimeout: 500000000,
       timeoutBlocks: 200
     },

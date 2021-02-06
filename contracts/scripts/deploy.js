@@ -14,15 +14,23 @@ async function main() {
   // manually to make sure everything is compiled
   await hre.run('compile');
 
-  // We get the contract to deploy
+  // // We get the contract to deploy
+  // const OracleClient = await ethers.getContractFactory("OracleClient");
+  // const oracle = await OracleClient.deploy();
+
+  // console.log("OracleClient deployed to:", oracle.address);
+
+  const oracleAddress = "0x5Da2ce650C536b485CFcFbDF21Bd77BDdf4333a7"
   // const NFTFactory = await ethers.getContractFactory("NFTFactory");
-  // const factory = await NFTFactory.deploy();
+  // const factory = await NFTFactory.deploy(oracleAddress);
 
   // console.log("NFTFactory deployed to:", factory.address);
 
 
+  const nftFactoryAddress = "0x9728299e76b682F63dD598DaA2B7857EB517C268"
+
   const CreditExecutor = await ethers.getContractFactory("CreditExecutor");
-  const executor = await CreditExecutor.deploy("0x5a249591A78a01480F4088321156B4a5450D0985");
+  const executor = await CreditExecutor.deploy(nftFactoryAddress, oracleAddress);
 
   await executor.deployed();
   console.log("CreditExecutor deployed to:", executor.address);

@@ -1,6 +1,6 @@
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { IERC20, IERC721, ILendingPool, IProtocolDataProvider, IStableDebtToken } from './Interfaces.sol';
+
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract DAIFaucet {
 // contract Faucet {
